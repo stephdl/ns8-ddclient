@@ -66,6 +66,7 @@
             <cv-text-input
               :label="$t('settings.ddclient_password')"
               placeholder="password"
+              type="password"
               v-model.trim="ddclient_password"
               class="mg-bottom"
               :invalid-message="$t(error.ddclient_login)"
@@ -244,11 +245,43 @@ export default {
       this.clearErrors(this);
 
       let isValidationOk = true;
-      if (!this.host) {
-        this.error.host = "common.required";
+      if (!this.ddclient_host) {
+        this.error.ddclient_host = "common.required";
 
         if (isValidationOk) {
-          this.focusElement("host");
+          this.focusElement("ddclient_host");
+        }
+        isValidationOk = false;
+      }
+      if (!this.provider_host) {
+        this.error.provider_host = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("provider_host");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_protocol) {
+        this.error.ddclient_protocol = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_protocol");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_login) {
+        this.error.ddclient_login = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_login");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_password) {
+        this.error.ddclient_password = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_password");
         }
         isValidationOk = false;
       }
