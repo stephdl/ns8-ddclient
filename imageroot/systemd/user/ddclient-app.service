@@ -21,11 +21,12 @@ ExecStartPre=-runagent discover-smarthost
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/ddclient-app.pid \
     --cidfile %t/ddclient-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/ddclient.pod-id --replace -d --name  ddclient-app \
-    --volume ./config:/config:Z \
+    --volume config:/config:Z \
     -e PUID=1000 \
     -e PGID=1000 \
     -e TZ=Etc/UTC \
     ${DDCLIENT_IMAGE}
+ExecStartPost=podman cp ./config/ddclient.conf ddclient-app:/config/ddclient.conf
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/ddclient-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP ddclient-app
 SyslogIdentifier=%u
