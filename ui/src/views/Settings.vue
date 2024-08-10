@@ -26,31 +26,57 @@
             <cv-text-input
               :label="$t('settings.ddclient_fqdn')"
               placeholder="ddclient.example.org"
-              v-model.trim="host"
+              v-model.trim="ddclient_host"
               class="mg-bottom"
-              :invalid-message="$t(error.host)"
+              :invalid-message="$t(error.ddclient_host)"
               :disabled="loading.getConfiguration || loading.configureModule"
-              ref="host"
+              ref="ddclient_host"
+            >
+            </cv-text-input>
+            <cv-text-input
+              :label="$t('settings.provider_fqdn')"
+              placeholder="providers.example.org"
+              v-model.trim="provider_host"
+              class="mg-bottom"
+              :invalid-message="$t(error.provider_host)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="provider_host"
+            >
+            </cv-text-input>
+            <cv-text-input
+              :label="$t('settings.ddclient_protocol')"
+              placeholder="dyndns2"
+              v-model.trim="ddclient_protocol"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_protocol)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_protocol"
+            >
+            </cv-text-input>
+            <cv-text-input
+              :label="$t('settings.ddclient_login')"
+              placeholder="username"
+              v-model.trim="ddclient_login"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_login)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_login"
+            >
+            </cv-text-input>
+            <cv-text-input
+              :label="$t('settings.ddclient_password')"
+              placeholder="password"
+              v-model.trim="ddclient_password"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_login)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_password"
             >
             </cv-text-input>
             <cv-toggle
-              value="letsEncrypt"
-              :label="$t('settings.lets_encrypt')"
-              v-model="isLetsEncryptEnabled"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              class="mg-bottom"
-            >
-              <template slot="text-left">{{
-                $t("settings.disabled")
-              }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
-            <cv-toggle
               value="httpToHttps"
-              :label="$t('settings.http_to_https')"
-              v-model="isHttpToHttpsEnabled"
+              :label="$t('settings.use_https')"
+              v-model="isForceHttpsEnabled"
               :disabled="loading.getConfiguration || loading.configureModule"
               class="mg-bottom"
             >
@@ -61,12 +87,11 @@
                 $t("settings.enabled")
               }}</template>
             </cv-toggle>
-              <!-- advanced options -->
+            <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
               <cv-accordion-item :open="toggleAccordion[0]">
                 <template slot="title">{{ $t("settings.advanced") }}</template>
-                <template slot="content">
-                </template>
+                <template slot="content"> </template>
               </cv-accordion-item>
             </cv-accordion>
             <cv-row v-if="error.configureModule">
@@ -122,9 +147,12 @@ export default {
         page: "settings",
       },
       urlCheckInterval: null,
-      host: "",
-      isLetsEncryptEnabled: false,
-      isHttpToHttpsEnabled: true,
+      ddclient_host: "",
+      provider_host: "",
+      ddclient_protocol: "",
+      ddclient_login: "",
+      ddclient_password: "",
+      isForceHttpsEnabled: true,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -132,8 +160,11 @@ export default {
       error: {
         getConfiguration: "",
         configureModule: "",
-        host: "",
-        lets_encrypt: "",
+        ddclient_host: "",
+        provider_host: "",
+        ddclient_protocol: "",
+        ddclient_login: "",
+        ddclient_password: "",
         http2https: "",
       },
     };
@@ -199,9 +230,12 @@ export default {
     },
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
-      this.host = config.host;
-      this.isLetsEncryptEnabled = config.lets_encrypt;
-      this.isHttpToHttpsEnabled = config.http2https;
+      this.isForceHttpsEnabled = config.http2https;
+      this.ddclient_host = config.ddclient_host;
+      this.provider_host = config.provider_host;
+      this.ddclient_protocol = config.ddclient_protocol;
+      this.ddclient_login = config.ddclient_login;
+      this.ddclient_password = config.ddclient_password;
 
       this.loading.getConfiguration = false;
       this.focusElement("host");
@@ -268,9 +302,12 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            host: this.host,
-            lets_encrypt: this.isLetsEncryptEnabled,
-            http2https: this.isHttpToHttpsEnabled,
+            http2https: this.isForceHttpsEnabled,
+            ddclient_host: this.ddclient_host,
+            provider_host: this.provider_host,
+            ddclient_protocol: this.ddclient_protocol,
+            ddclient_login: this.ddclient_login,
+            ddclient_password: this.ddclient_password,
           },
           extra: {
             title: this.$t("settings.instance_configuration", {
