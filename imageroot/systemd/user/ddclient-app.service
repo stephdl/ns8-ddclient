@@ -18,6 +18,7 @@ TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p config
 ExecStartPre=/bin/rm -f %t/ddclient-app.pid %t/ddclient-app.ctr-id
 ExecStartPre=-runagent discover-smarthost
+ExecStartPre=runagent write-ddclient-conf
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/ddclient-app.pid \
     --cidfile %t/ddclient-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/ddclient.pod-id --replace -d --name  ddclient-app \
