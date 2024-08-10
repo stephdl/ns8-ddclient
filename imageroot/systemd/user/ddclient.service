@@ -10,8 +10,8 @@
 
 [Unit]
 Description=Podman ddclient.service
-Requires=mariadb-app.service ddclient-app.service
-Before=mariadb-app.service ddclient-app.service
+Requires=ddclient-app.service
+Before=ddclient-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -22,7 +22,6 @@ ExecStartPre=/bin/rm -f %t/ddclient.pid %t/ddclient.pod-id
 ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/ddclient.pid \
     --pod-id-file %t/ddclient.pod-id \
     --name ddclient \
-    --publish 127.0.0.1:${TCP_PORT}:80 \
     --replace
 ExecStart=/usr/bin/podman pod start --pod-id-file %t/ddclient.pod-id
 ExecStop=/usr/bin/podman pod stop --ignore --pod-id-file %t/ddclient.pod-id -t 10
