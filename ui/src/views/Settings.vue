@@ -74,20 +74,6 @@
               ref="ddclient_password"
             >
             </cv-text-input>
-            <cv-toggle
-              value="httpToHttps"
-              :label="$t('settings.use_https')"
-              v-model="isForceHttpsEnabled"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              class="mg-bottom"
-            >
-              <template slot="text-left">{{
-                $t("settings.disabled")
-              }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
             <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
               <cv-accordion-item :open="toggleAccordion[0]">
@@ -153,7 +139,6 @@ export default {
       ddclient_protocol: "",
       ddclient_login: "",
       ddclient_password: "",
-      isForceHttpsEnabled: true,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -166,7 +151,6 @@ export default {
         ddclient_protocol: "",
         ddclient_login: "",
         ddclient_password: "",
-        http2https: "",
       },
     };
   },
@@ -231,7 +215,6 @@ export default {
     },
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
-      this.isForceHttpsEnabled = config.http2https;
       this.ddclient_host = config.ddclient_host;
       this.ddclient_server = config.ddclient_server;
       this.ddclient_protocol = config.ddclient_protocol;
@@ -335,7 +318,6 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            http2https: this.isForceHttpsEnabled,
             ddclient_host: this.ddclient_host,
             ddclient_server: this.ddclient_server,
             ddclient_protocol: this.ddclient_protocol,
