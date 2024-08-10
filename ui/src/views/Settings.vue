@@ -36,11 +36,11 @@
             <cv-text-input
               :label="$t('settings.provider_fqdn')"
               placeholder="providers.example.org"
-              v-model.trim="provider_host"
+              v-model.trim="ddclient_server"
               class="mg-bottom"
-              :invalid-message="$t(error.provider_host)"
+              :invalid-message="$t(error.ddclient_server)"
               :disabled="loading.getConfiguration || loading.configureModule"
-              ref="provider_host"
+              ref="ddclient_server"
             >
             </cv-text-input>
             <cv-text-input
@@ -149,7 +149,7 @@ export default {
       },
       urlCheckInterval: null,
       ddclient_host: "",
-      provider_host: "",
+      ddclient_server: "",
       ddclient_protocol: "",
       ddclient_login: "",
       ddclient_password: "",
@@ -162,7 +162,7 @@ export default {
         getConfiguration: "",
         configureModule: "",
         ddclient_host: "",
-        provider_host: "",
+        ddclient_server: "",
         ddclient_protocol: "",
         ddclient_login: "",
         ddclient_password: "",
@@ -233,7 +233,7 @@ export default {
       const config = taskResult.output;
       this.isForceHttpsEnabled = config.http2https;
       this.ddclient_host = config.ddclient_host;
-      this.provider_host = config.provider_host;
+      this.ddclient_server = config.ddclient_server;
       this.ddclient_protocol = config.ddclient_protocol;
       this.ddclient_login = config.ddclient_login;
       this.ddclient_password = config.ddclient_password;
@@ -253,11 +253,11 @@ export default {
         }
         isValidationOk = false;
       }
-      if (!this.provider_host) {
-        this.error.provider_host = "common.required";
+      if (!this.ddclient_server) {
+        this.error.ddclient_server = "common.required";
 
         if (isValidationOk) {
-          this.focusElement("provider_host");
+          this.focusElement("ddclient_server");
         }
         isValidationOk = false;
       }
@@ -337,7 +337,7 @@ export default {
           data: {
             http2https: this.isForceHttpsEnabled,
             ddclient_host: this.ddclient_host,
-            provider_host: this.provider_host,
+            ddclient_server: this.ddclient_server,
             ddclient_protocol: this.ddclient_protocol,
             ddclient_login: this.ddclient_login,
             ddclient_password: this.ddclient_password,
