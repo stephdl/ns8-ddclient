@@ -12,20 +12,12 @@
     ],
     "type": "object",
     "required": [
-        "host",
-        "http2https",
-        "lets_encrypt"
     ],
     "properties": {
         "host": {
             "type": "string",
             "description": "Host name for the application, like 'ddclient.domain.org'",
             "format": "idn-hostname"
-        },
-        "lets_encrypt": {
-            "type": "boolean",
-            "title": "Let's Encrypt certificate",
-            "description": "Request a valid Let's Encrypt certificate."
         },
         "http2https": {
             "type": "boolean",
