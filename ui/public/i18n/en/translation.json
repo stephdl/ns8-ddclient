@@ -28,7 +28,6 @@
     "title": "Settings",
     "configure_instance": "Configure {instance}",
     "save": "Save",
-    "ddclient_fqdn": "ddclient hostname (FQDN)",
     "lets_encrypt": "Request LE Certificate",
     "http_to_https": "Force HTTPS",
     "enabled": "Enabled",
@@ -38,7 +37,15 @@
     "instance_configuration": "Configure ddclient",
     "domain_already_used_in_traefik": "Domain already used in traefik",
     "host_pattern": "Must be a valid fully qualified domain name",
-    "host_format": "Must be a valid fully qualified domain name"
+    "host_format": "Must be a valid fully qualified domain name",
+    "ddclient_fqdn": "dynamic domain name (FQDN)",
+    "ddclient_fqdn_tooltip": "Fully qualified domain name (FQDN) to update",
+    "ddclient_protocol": "ddclient protocol",
+    "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. see <a href='https://ddclient.net/protocols.html'>ddclient documentation</a>",
+    "provider_fqdn": "FQDN of provider server",
+    "ddclient_login": "ddclient login",
+    "ddclient_password": "ddclient password"
+
   },
   "about": {
     "title": "About"

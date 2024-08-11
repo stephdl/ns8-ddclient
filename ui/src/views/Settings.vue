@@ -23,7 +23,7 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <cv-text-input
+            <NsTextInput
               :label="$t('settings.ddclient_fqdn')"
               placeholder="ddclient.example.org"
               v-model.trim="ddclient_host"
@@ -32,18 +32,11 @@
               :disabled="loading.getConfiguration || loading.configureModule"
               ref="ddclient_host"
             >
-            </cv-text-input>
-            <cv-text-input
-              :label="$t('settings.provider_fqdn')"
-              placeholder="providers.example.org"
-              v-model.trim="ddclient_server"
-              class="mg-bottom"
-              :invalid-message="$t(error.ddclient_server)"
-              :disabled="loading.getConfiguration || loading.configureModule"
-              ref="ddclient_server"
-            >
-            </cv-text-input>
-            <cv-text-input
+              <template #tooltip>{{
+                $t("settings.ddclient_fqdn_tooltip")
+              }}</template>
+            </NsTextInput>
+            <NsTextInput
               :label="$t('settings.ddclient_protocol')"
               placeholder="dyndns2"
               v-model.trim="ddclient_protocol"
@@ -52,8 +45,21 @@
               :disabled="loading.getConfiguration || loading.configureModule"
               ref="ddclient_protocol"
             >
-            </cv-text-input>
-            <cv-text-input
+              <template #tooltip>{{
+                $t("settings.ddclient_protocol_tooltip")
+              }}</template>
+            </NsTextInput>
+            <NsTextInput
+              :label="$t('settings.provider_fqdn')"
+              placeholder="providers.example.org"
+              v-model.trim="ddclient_server"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_server)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_server"
+            >
+            </NsTextInput>
+            <NsTextInput
               :label="$t('settings.ddclient_login')"
               placeholder="username"
               v-model.trim="ddclient_login"
@@ -62,8 +68,8 @@
               :disabled="loading.getConfiguration || loading.configureModule"
               ref="ddclient_login"
             >
-            </cv-text-input>
-            <cv-text-input
+            </NsTextInput>
+            <NsTextInput
               :label="$t('settings.ddclient_password')"
               placeholder="password"
               type="password"
@@ -73,7 +79,7 @@
               :disabled="loading.getConfiguration || loading.configureModule"
               ref="ddclient_password"
             >
-            </cv-text-input>
+            </NsTextInput>
             <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
               <cv-accordion-item :open="toggleAccordion[0]">
