@@ -41,11 +41,10 @@
     "ddclient_fqdn": "dynamic domain name (FQDN)",
     "ddclient_fqdn_tooltip": "Fully qualified domain name (FQDN) to update",
     "ddclient_protocol": "ddclient protocol",
-    "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. see <a href='https://ddclient.net/protocols.html'>ddclient documentation</a>",
+    "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. See ddclient documentation",
     "provider_fqdn": "FQDN of provider server",
     "ddclient_login": "ddclient login",
     "ddclient_password": "ddclient password"
-
   },
   "about": {
     "title": "About"
