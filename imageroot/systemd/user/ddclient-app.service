@@ -1,0 +1,39 @@
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman  ddclient-app.service
+BindsTo=ddclient.service
+After=ddclient.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+EnvironmentFile=-%S/state/smarthost.env
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/mkdir -p config
+ExecStartPre=/bin/rm -f %t/ddclient-app.pid %t/ddclient-app.ctr-id
+ExecStartPre=-runagent discover-smarthost
+ExecStartPre=runagent write-ddclient-conf
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/ddclient-app.pid \
+    --cidfile %t/ddclient-app.ctr-id --cgroups=no-conmon \
+    --pod-id-file %t/ddclient.pod-id --replace -d --name  ddclient-app \
+    --volume config:/config:Z \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e TZ=Etc/UTC \
+    ${DDCLIENT_IMAGE}
+ExecStartPost=podman cp ./config/ddclient.conf ddclient-app:/config/ddclient.conf
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/ddclient-app.ctr-id -t 10
+ExecReload=/usr/bin/podman kill -s HUP ddclient-app
+SyslogIdentifier=%u
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/ddclient-app.ctr-id
+PIDFile=%t/ddclient-app.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

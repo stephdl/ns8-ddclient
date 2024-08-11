@@ -23,52 +23,70 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <cv-text-input
-              :label="$t('settings.kickstart_fqdn')"
-              placeholder="kickstart.example.org"
-              v-model.trim="host"
+            <NsTextInput
+              :label="$t('settings.ddclient_fqdn')"
+              placeholder="ddclient.example.org"
+              v-model.trim="ddclient_host"
               class="mg-bottom"
-              :invalid-message="$t(error.host)"
+              :invalid-message="$t(error.ddclient_host)"
               :disabled="loading.getConfiguration || loading.configureModule"
-              ref="host"
+              ref="ddclient_host"
             >
-            </cv-text-input>
-            <cv-toggle
-              value="letsEncrypt"
-              :label="$t('settings.lets_encrypt')"
-              v-model="isLetsEncryptEnabled"
-              :disabled="loading.getConfiguration || loading.configureModule"
+              <template #tooltip>{{
+                $t("settings.ddclient_fqdn_tooltip")
+              }}</template>
+            </NsTextInput>
+            <NsTextInput
+              :label="$t('settings.ddclient_protocol')"
+              placeholder="dyndns2"
+              v-model.trim="ddclient_protocol"
               class="mg-bottom"
-            >
-              <template slot="text-left">{{
-                $t("settings.disabled")
-              }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
-            <cv-toggle
-              value="httpToHttps"
-              :label="$t('settings.http_to_https')"
-              v-model="isHttpToHttpsEnabled"
+              :invalid-message="$t(error.ddclient_protocol)"
               :disabled="loading.getConfiguration || loading.configureModule"
-              class="mg-bottom"
+              ref="ddclient_protocol"
             >
-              <template slot="text-left">{{
-                $t("settings.disabled")
+              <template #tooltip>{{
+                $t("settings.ddclient_protocol_tooltip")
               }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
-              <!-- advanced options -->
+            </NsTextInput>
+            <NsTextInput
+              :label="$t('settings.provider_fqdn')"
+              placeholder="providers.example.org"
+              v-model.trim="ddclient_server"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_server)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_server"
+            >
+            </NsTextInput>
+            <NsTextInput
+              :label="$t('settings.ddclient_login')"
+              placeholder="username"
+              v-model.trim="ddclient_login"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_login)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_login"
+            >
+            </NsTextInput>
+            <NsTextInput
+              :label="$t('settings.ddclient_password')"
+              placeholder="password"
+              type="password"
+              v-model.trim="ddclient_password"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_login)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_password"
+            >
+            </NsTextInput>
+            <!-- advanced options 
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
               <cv-accordion-item :open="toggleAccordion[0]">
                 <template slot="title">{{ $t("settings.advanced") }}</template>
-                <template slot="content">
-                </template>
+                <template slot="content"> </template>
               </cv-accordion-item>
-            </cv-accordion>
+            </cv-accordion> -->
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -122,9 +140,11 @@ export default {
         page: "settings",
       },
       urlCheckInterval: null,
-      host: "",
-      isLetsEncryptEnabled: false,
-      isHttpToHttpsEnabled: true,
+      ddclient_host: "",
+      ddclient_server: "",
+      ddclient_protocol: "",
+      ddclient_login: "",
+      ddclient_password: "",
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -132,9 +152,11 @@ export default {
       error: {
         getConfiguration: "",
         configureModule: "",
-        host: "",
-        lets_encrypt: "",
-        http2https: "",
+        ddclient_host: "",
+        ddclient_server: "",
+        ddclient_protocol: "",
+        ddclient_login: "",
+        ddclient_password: "",
       },
     };
   },
@@ -199,9 +221,11 @@ export default {
     },
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
-      this.host = config.host;
-      this.isLetsEncryptEnabled = config.lets_encrypt;
-      this.isHttpToHttpsEnabled = config.http2https;
+      this.ddclient_host = config.ddclient_host;
+      this.ddclient_server = config.ddclient_server;
+      this.ddclient_protocol = config.ddclient_protocol;
+      this.ddclient_login = config.ddclient_login;
+      this.ddclient_password = config.ddclient_password;
 
       this.loading.getConfiguration = false;
       this.focusElement("host");
@@ -210,11 +234,43 @@ export default {
       this.clearErrors(this);
 
       let isValidationOk = true;
-      if (!this.host) {
-        this.error.host = "common.required";
+      if (!this.ddclient_host) {
+        this.error.ddclient_host = "common.required";
 
         if (isValidationOk) {
-          this.focusElement("host");
+          this.focusElement("ddclient_host");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_server) {
+        this.error.ddclient_server = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_server");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_protocol) {
+        this.error.ddclient_protocol = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_protocol");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_login) {
+        this.error.ddclient_login = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_login");
+        }
+        isValidationOk = false;
+      }
+      if (!this.ddclient_password) {
+        this.error.ddclient_password = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("ddclient_password");
         }
         isValidationOk = false;
       }
@@ -268,9 +324,11 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            host: this.host,
-            lets_encrypt: this.isLetsEncryptEnabled,
-            http2https: this.isHttpToHttpsEnabled,
+            ddclient_host: this.ddclient_host,
+            ddclient_server: this.ddclient_server,
+            ddclient_protocol: this.ddclient_protocol,
+            ddclient_login: this.ddclient_login,
+            ddclient_password: this.ddclient_password,
           },
           extra: {
             title: this.$t("settings.instance_configuration", {

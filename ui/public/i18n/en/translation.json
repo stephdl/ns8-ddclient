@@ -19,26 +19,32 @@
     "no_services": "No services",
     "no_images": "No images",
     "no_volumes": "No volumes",
-    "kickstart_webapp": "kickstart webapp",
+    "ddclient_webapp": "ddclient webapp",
     "not_configured": "Not configured",
-    "open_webapp": "Open kickstart",
+    "open_webapp": "Open ddclient",
     "configure": "Configure"
   },
   "settings": {
     "title": "Settings",
     "configure_instance": "Configure {instance}",
     "save": "Save",
-    "kickstart_fqdn": "kickstart hostname (FQDN)",
     "lets_encrypt": "Request LE Certificate",
     "http_to_https": "Force HTTPS",
     "enabled": "Enabled",
     "disabled": "Disabled",
     "advanced": "Advanced",
     "configuring": "Configuring",
-    "instance_configuration": "Configure kickstart",
+    "instance_configuration": "Configure ddclient",
     "domain_already_used_in_traefik": "Domain already used in traefik",
     "host_pattern": "Must be a valid fully qualified domain name",
-    "host_format": "Must be a valid fully qualified domain name"
+    "host_format": "Must be a valid fully qualified domain name",
+    "ddclient_fqdn": "dynamic domain name (FQDN)",
+    "ddclient_fqdn_tooltip": "Fully qualified domain name (FQDN) to update",
+    "ddclient_protocol": "ddclient protocol",
+    "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. See ddclient documentation",
+    "provider_fqdn": "FQDN of provider server",
+    "ddclient_login": "ddclient login",
+    "ddclient_password": "ddclient password"
   },
   "about": {
     "title": "About"
