@@ -22,16 +22,33 @@
   ],
   "properties": {
     "ddclient_host": {
-      "type": "string",
-      "description": "Host name for the application, like 'ddclient.domain.org'",
-      "format": "hostname",
-      "pattern": "\\."
+      "description": "Host name for the application, like 'ddclient.domain.org' or an empty string",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^$"
+        },
+        {
+          "type": "string",
+          "format": "hostname",
+          "pattern": "\\."
+        }
+      ]
     },
     "ddclient_server": {
       "type": "string",
       "description": "Host name for the api server, like 'ddclient.domain.org'",
-      "format": "hostname",
-      "pattern": "\\."
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^$"
+        },
+        {
+          "type": "string",
+          "format": "hostname",
+          "pattern": "\\."
+        }
+      ]
     },
     "ddclient_login": {
       "type": "string",
