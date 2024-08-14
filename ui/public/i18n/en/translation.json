@@ -44,7 +44,11 @@
     "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. See ddclient documentation",
     "provider_fqdn": "FQDN of provider server",
     "ddclient_login": "ddclient login",
-    "ddclient_password": "ddclient password"
+    "ddclient_password": "ddclient password",
+    "external_ip": "External IP",
+    "external_ip_of_the_server_both": "External IP of the server ipv4: {ipv4} ipv6: {ipv6}",
+    "external_ip_of_the_server_ipv4": "External IP of the server ipv4: {ipv4}, no ipv6",
+    "external_ip_of_the_server_ipv6": "External IP of the server ipv6: {ipv6}, no ipv4"
   },
   "about": {
     "title": "About"

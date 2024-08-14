@@ -13,6 +13,7 @@ import os
 import sys
 import json
 import agent
+import subprocess
 
 # Prepare return variable
 config = {}
@@ -24,6 +25,28 @@ config["ddclient_password"] = os.getenv("DDCLIENT_PASSWORD","")
 config["ddclient_protocol"] = os.getenv("DDCLIENT_PROTOCOL","")
 config["ddclient_server"] = os.getenv("DDCLIENT_SERVER","")
 config["http2https"] = os.getenv("HTTP2HTTPS","") == "True"
+
+
+def get_ip(version='-4'):
+    try:
+        # Validate the IP version argument
+        if version not in ['-4', '-6']:
+            raise ValueError("Invalid IP version specified. Use '-4' for IPv4 or '-6' for IPv6.")
+        
+        # Run the curl command with the specified IP version
+        result = subprocess.run(["curl", version, "icanhazip.com"], capture_output=True, text=True, check=True)
+        # Get the output and strip any extra whitespace
+        ip_address = result.stdout.strip()
+    except (subprocess.CalledProcessError, ValueError) as e:
+        # If there's an error, return an empty string
+        ip_address = ""
+        print(f"cannot retrieve IP {version}: {e}", file=sys.stderr)
+
+    return ip_address
+
+# Example usage
+config["ipv4_address"] = get_ip('-4')
+config["ipv6_address"] = get_ip('-6')
 
 # Dump the configuration to stdout
 json.dump(config, fp=sys.stdout)

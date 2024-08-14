@@ -21,6 +21,16 @@
     </cv-row>
     <cv-row>
       <cv-column>
+        <NsInlineNotification
+          kind="info"
+          :title="$t('settings.external_ip')"
+          :description="descriptionMessage"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
+    <cv-row>
+      <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
             <NsTextInput
@@ -145,6 +155,8 @@ export default {
       ddclient_protocol: "",
       ddclient_login: "",
       ddclient_password: "",
+      ipv4_address: "",
+      ipv6_address: "",
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -162,6 +174,20 @@ export default {
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    descriptionMessage() {
+      return this.ipv4_address && this.ipv6_address
+        ? this.$t("settings.external_ip_of_the_server_both", {
+            ipv4: this.ipv4_address,
+            ipv6: this.ipv6_address,
+          })
+        : this.ipv4_address
+          ? this.$t("settings.external_ip_of_the_server_ipv4", {
+              ipv4: this.ipv4_address,
+            })
+          : this.$t("settings.external_ip_of_the_server_ipv6", {
+              ipv6: this.ipv6_address,
+            });
+    },
   },
   created() {
     this.getConfiguration();
@@ -226,6 +252,8 @@ export default {
       this.ddclient_protocol = config.ddclient_protocol;
       this.ddclient_login = config.ddclient_login;
       this.ddclient_password = config.ddclient_password;
+      this.ipv4_address = config.ipv4_address;
+      this.ipv6_address = config.ipv6_address;
 
       this.loading.getConfiguration = false;
       this.focusElement("host");
