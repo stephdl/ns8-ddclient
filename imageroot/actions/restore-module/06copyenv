@@ -14,10 +14,10 @@ request = json.load(sys.stdin)
 original_environment = request['environment']
 
 for evar in [
-        "TRAEFIK_HOST",
-        "TRAEFIK_HTTP2HTTPS",
-        "TRAEFIK_LETS_ENCRYPT",
+        "DDCLIENT_HOST",
+        "DDCLIENT_LOGIN",
+        "DDCLIENT_PASSWORD",
+        "DDCLIENT_PROTOCOL",
+        "DDCLIENT_SERVER",
     ]:
     agent.set_env(evar, original_environment[evar])
-
-agent.dump_env()
