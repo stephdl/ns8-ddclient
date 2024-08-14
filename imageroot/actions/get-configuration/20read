@@ -46,7 +46,7 @@ def get_ip(version='-4'):
 
 # Example usage
 config["ipv4_address"] = get_ip('-4')
-config["ipv6_address"] = get_ip('-6')
+config["ipv6_address"] = get_ip('-6') if config["ddclient_ipv6"] else ""
 
 # Dump the configuration to stdout
 json.dump(config, fp=sys.stdout)
