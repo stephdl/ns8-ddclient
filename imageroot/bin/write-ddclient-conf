@@ -12,7 +12,24 @@ DDCLIENT_PROTOCOL=${DDCLIENT_PROTOCOL}
 DDCLIENT_LOGIN=${DDCLIENT_LOGIN}
 DDCLIENT_PASSWORD=${DDCLIENT_PASSWORD}
 DDCLIENT_HOST=${DDCLIENT_HOST}
+DDCLIENT_IPV6=${DDCLIENT_IPV6}
+DDCLIENT_DAEMON=${DDCLIENT_DAEMON}
 
 mkdir -vp config
 
-envsubst > config/ddclient.conf <../templates/ddclient.conf.tmpl
+# Preprocess the template to remove lines with empty variables
+awk '
+{
+    line = $0
+    while (match(line, /\$\{[^}]+\}/)) {
+        var = substr(line, RSTART + 2, RLENGTH - 3)
+        # Check if the variable is empty
+        if (ENVIRON[var] == "") {
+            # Remove the entire line if the variable is empty
+            next
+        }
+        # Replace the variable with its value
+        line = substr(line, 1, RSTART - 1) ENVIRON[var] substr(line, RSTART + RLENGTH)
+    }
+    print line
+}' ../templates/ddclient.conf.tmpl | envsubst > config/ddclient.conf
