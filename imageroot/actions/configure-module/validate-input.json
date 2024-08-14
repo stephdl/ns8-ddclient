@@ -5,20 +5,45 @@
     "description": "Configure ddclient",
     "examples": [
         {
-            "host": "ddclient.domain.org",
-            "http2https": true,
-            "lets_encrypt": true
+            "ddclient_host": "ddclient.domain.org",
+            "ddclient_server": "ddclient.domain.org",
+            "ddclient_login": "admin",
+            "ddclient_password": "admin",
+            "ddclient_protocol": "http"
         }
     ],
     "type": "object",
     "required": [
+        "ddclient_host",
+        "ddclient_server",
+        "ddclient_login",
+        "ddclient_password",
+        "ddclient_protocol"
     ],
     "properties": {
-        "host": {
+        "ddclient_host": {
             "type": "string",
             "description": "Host name for the application, like 'ddclient.domain.org'",
             "format": "hostname",
             "pattern": "\\."
+        },
+        "ddclient_server": {
+            "type": "string",
+            "description": "Host name for the api server, like 'ddclient.domain.org'",
+            "format": "hostname",
+            "pattern": "\\."
+        },
+        "ddclient_login": {
+            "type": "string",
+            "description": "Login for the api server"
+        },
+        "ddclient_password": {
+            "type": "string",
+            "description": "Password for the api server"
+        },
+        "ddclient_protocol": {
+            "type": "string",
+            "description": "Protocol for the api server"
         }
     }
 }
