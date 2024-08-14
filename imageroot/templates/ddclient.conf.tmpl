@@ -1,14 +1,14 @@
-daemon=300                            # check every 300 seconds
+daemon=${DDCLIENT_DAEMON}                           # check every 300 seconds
 syslog=yes                                      # log update msgs to syslog
 #mail=auser@domain.com              # mail update msgs to root
 #mail-failure=user@domain.com      # mail failure msgs to root
 pid=/var/run/ddclient/ddclient.pid                       # record PID in file.
 ssl=yes
-usev4=webv4, webv4=ip.changeip.com/ 
-usev6=webv6, webv6=ip.changeip.com/
-#use=web, 
+usev4=webv4, webv4=api.ipify.org
+usev6=${DDCLIENT_IPV6}, webv6=api6.ipify.org
 ##
-## Dynu (dynu.com) dynamic addresses
+##
+## Custom dynamic addresses
 ##
 server=${DDCLIENT_SERVER}, \
 protocol=${DDCLIENT_PROTOCOL}, \

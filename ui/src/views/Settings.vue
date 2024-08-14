@@ -21,6 +21,16 @@
     </cv-row>
     <cv-row>
       <cv-column>
+        <NsInlineNotification
+          kind="info"
+          :title="$t('settings.external_ip')"
+          :description="descriptionMessage"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
+    <cv-row>
+      <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
             <NsTextInput
@@ -80,13 +90,66 @@
               ref="ddclient_password"
             >
             </NsTextInput>
-            <!-- advanced options 
+            <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
               <cv-accordion-item :open="toggleAccordion[0]">
                 <template slot="title">{{ $t("settings.advanced") }}</template>
-                <template slot="content"> </template>
+                <template slot="content">
+                  <cv-dropdown
+                    :light="true"
+                    :value="ddclient_daemon"
+                    v-model="ddclient_daemon"
+                    :up="false"
+                    :inline="false"
+                    :helper-text="$t('settings.ddclient_daemon_helper_text')"
+                    :hide-selected="false"
+                    :invalid-message="$t(error.ddclient_daemon)"
+                    :label="$t('settings.select_ddclient_daemon_renew')"
+                    :disabled="
+                      loading.getConfiguration || loading.configureModule
+                    "
+                  >
+                    <cv-dropdown-item selected value="300">{{
+                      $t("settings.ddclient_daemon_300s")
+                    }}</cv-dropdown-item>
+                    <cv-dropdown-item value="600">{{
+                      $t("settings.ddclient_daemon_600s")
+                    }}</cv-dropdown-item>
+                    <cv-dropdown-item value="900">{{
+                      $t("settings.ddclient_daemon_900s")
+                    }}</cv-dropdown-item>
+                    <cv-dropdown-item value="1200">{{
+                      $t("settings.ddclient_daemon_1200s")
+                    }}</cv-dropdown-item>
+                    <cv-dropdown-item value="1500">{{
+                      $t("settings.ddclient_daemon_1500s")
+                    }}</cv-dropdown-item>
+                    <cv-dropdown-item value="1800">{{
+                      $t("settings.ddclient_daemon_1800s")
+                    }}</cv-dropdown-item>
+                    <cv-dropdown-item value="3600">{{
+                      $t("settings.ddclient_daemon_3600s")
+                    }}</cv-dropdown-item>
+                  </cv-dropdown>
+                  <cv-toggle
+                    :value="ddclient_ipv6"
+                    :label="$t('settings.enable_ipv6')"
+                    v-model="isIpv6Enabled"
+                    :disabled="
+                      loading.getConfiguration || loading.configureModule
+                    "
+                    class="mg-bottom"
+                  >
+                    <template slot="text-left">{{
+                      $t("settings.disabled")
+                    }}</template>
+                    <template slot="text-right">{{
+                      $t("settings.enabled")
+                    }}</template>
+                  </cv-toggle>
+                </template>
               </cv-accordion-item>
-            </cv-accordion> -->
+            </cv-accordion>
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -145,6 +208,11 @@ export default {
       ddclient_protocol: "",
       ddclient_login: "",
       ddclient_password: "",
+      ipv4_address: "",
+      ipv6_address: "",
+      ddclient_daemon: "300",
+      isIpv6Enabled: false,
+      ddclient_ipv6: false,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -157,11 +225,26 @@ export default {
         ddclient_protocol: "",
         ddclient_login: "",
         ddclient_password: "",
+        ddclient_daemon: "",
       },
     };
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    descriptionMessage() {
+      return this.ipv4_address && this.ipv6_address
+        ? this.$t("settings.external_ip_of_the_server_both", {
+            ipv4: this.ipv4_address,
+            ipv6: this.ipv6_address,
+          })
+        : this.ipv4_address
+        ? this.$t("settings.external_ip_of_the_server_ipv4", {
+            ipv4: this.ipv4_address,
+          })
+        : this.$t("settings.external_ip_of_the_server_ipv6", {
+            ipv6: this.ipv6_address,
+          });
+    },
   },
   created() {
     this.getConfiguration();
@@ -226,9 +309,13 @@ export default {
       this.ddclient_protocol = config.ddclient_protocol;
       this.ddclient_login = config.ddclient_login;
       this.ddclient_password = config.ddclient_password;
+      this.ipv4_address = config.ipv4_address;
+      this.ipv6_address = config.ipv6_address;
+      this.ddclient_daemon = config.ddclient_daemon;
+      this.isIpv6Enabled = config.ddclient_ipv6;
 
       this.loading.getConfiguration = false;
-      this.focusElement("host");
+      this.focusElement("ddclient_host");
     },
     validateConfigureModule() {
       this.clearErrors(this);
@@ -329,6 +416,8 @@ export default {
             ddclient_protocol: this.ddclient_protocol,
             ddclient_login: this.ddclient_login,
             ddclient_password: this.ddclient_password,
+            ddclient_daemon: this.ddclient_daemon,
+            ddclient_ipv6: this.isIpv6Enabled,
           },
           extra: {
             title: this.$t("settings.instance_configuration", {

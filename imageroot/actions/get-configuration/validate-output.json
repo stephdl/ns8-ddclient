@@ -18,9 +18,19 @@
     "ddclient_server",
     "ddclient_login",
     "ddclient_password",
-    "ddclient_protocol"
+    "ddclient_protocol",
+    "ddclient_daemon",
+    "ddclient_ipv6"
   ],
   "properties": {
+    "ddclient_daemon": {
+      "type": "string",
+      "description": "Enable ddclient daemon"
+    },
+    "ddclient_ipv6": {
+      "type": "boolean",
+      "description": "Enable ddclient ipv6"
+    },
     "ddclient_host": {
       "description": "Host name for the application, like 'ddclient.domain.org' or an empty string",
       "oneOf": [

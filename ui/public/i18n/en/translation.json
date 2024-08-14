@@ -44,7 +44,21 @@
     "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. See ddclient documentation",
     "provider_fqdn": "FQDN of provider server",
     "ddclient_login": "ddclient login",
-    "ddclient_password": "ddclient password"
+    "ddclient_password": "ddclient password",
+    "external_ip": "External IP",
+    "external_ip_of_the_server_both": "External IP of the server ipv4: {ipv4} ipv6: {ipv6}",
+    "external_ip_of_the_server_ipv4": "External IP of the server ipv4: {ipv4}, no ipv6",
+    "external_ip_of_the_server_ipv6": "External IP of the server ipv6: {ipv6}, no ipv4",
+    "ddclient_daemon_helper_text": "The ddclient daemon will update the dynamic domain name every X minutes",
+    "select_ddclient_daemon_renew": "Select the renewal interval",
+    "ddclient_daemon_300s": "5 minutes",
+    "ddclient_daemon_600s": "10 minutes",
+    "ddclient_daemon_900s": "15 minutes",
+    "ddclient_daemon_1200s": "20 minutes",
+    "ddclient_daemon_1500s": "25 minutes",
+    "ddclient_daemon_1800s": "30 minutes",
+    "ddclient_daemon_3600s": "1 hour",
+    "enable_ipv6": "Enable IPv6 automatic update"
   },
   "about": {
     "title": "About"
