@@ -19,7 +19,7 @@
     "no_services": "No services",
     "no_images": "No images",
     "no_volumes": "No volumes",
-    "ddclient_webapp": "ddclient webapp",
+    "ddclient_webapp": "dynamic DNS services",
     "not_configured": "Not configured",
     "open_webapp": "Open ddclient",
     "configure": "Configure"

@@ -44,7 +44,7 @@
         <NsInfoCard
           light
           :title="$t('status.ddclient_webapp')"
-          :description="this.host ? this.host : $t('status.not_configured')"
+          :description="this.ddclient_host ? this.ddclient_host : $t('status.not_configured')"
           :icon="Wikis32"
           :loading="loading.getConfiguration"
           :isErrorShown="error.getConfiguration"
@@ -54,16 +54,6 @@
         >
           <template slot="content">
             <NsButton
-              v-if="this.host"
-              kind="ghost"
-              :icon="Launch20"
-              :disabled="loading.getConfiguration"
-              @click="goToWebapp"
-            >
-              {{ $t("status.open_webapp") }}
-            </NsButton>
-            <NsButton
-              v-else
               kind="ghost"
               :disabled="loading.getConfiguration"
               :icon="ArrowRight20"
@@ -316,7 +306,7 @@ export default {
       urlCheckInterval: null,
       isRedirectChecked: false,
       redirectTimeout: 0,
-      host: "",
+      ddclient_host: "",
       status: {
         instance: "",
         services: [],
@@ -384,9 +374,6 @@ export default {
     this.listBackupRepositories();
   },
   methods: {
-    goToWebapp() {
-      window.open(`https://${this.host}`, "_blank");
-    },
     async getConfiguration() {
       this.loading.getConfiguration = true;
       this.error.getConfiguration = "";
@@ -431,7 +418,7 @@ export default {
     },
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
-      this.host = config.host;
+      this.ddclient_host = config.ddclient_host;
       this.loading.getConfiguration = false;
     },
     async getStatus() {
