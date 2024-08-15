@@ -58,7 +58,9 @@
     "ddclient_daemon_1500s": "25 minutes",
     "ddclient_daemon_1800s": "30 minutes",
     "ddclient_daemon_3600s": "1 hour",
-    "enable_ipv6": "Enable IPv6 automatic update"
+    "enable_ipv6": "Enable IPv6 automatic update",
+    "ddclient_password_placeholder_leave_empty_for_unchanged": "Leave empty for unchanged password",
+    "ddclient_password_placeholder_write_password_here": "Write password here"
   },
   "about": {
     "title": "About"

@@ -23,6 +23,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/ddclient-app.pid \
     --cidfile %t/ddclient-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/ddclient.pod-id --replace -d --name  ddclient-app \
     --volume config:/config:Z \
+    --env-file=%S/state/password.env \
     -e PUID=1000 \
     -e PGID=1000 \
     -e TZ=Etc/UTC \

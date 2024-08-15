@@ -81,7 +81,7 @@
             </NsTextInput>
             <NsTextInput
               :label="$t('settings.ddclient_password')"
-              placeholder="password"
+              :placeholder="ddclient_configured ? $t('settings.ddclient_password_placeholder_leave_empty_for_unchanged') : $t('settings.ddclient_password_placeholder_write_password_here')"
               type="password"
               v-model.trim="ddclient_password"
               class="mg-bottom"
@@ -213,6 +213,7 @@ export default {
       ddclient_daemon: "300",
       isIpv6Enabled: false,
       ddclient_ipv6: false,
+      ddclient_configured: false,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -313,6 +314,7 @@ export default {
       this.ipv6_address = config.ipv6_address;
       this.ddclient_daemon = config.ddclient_daemon;
       this.isIpv6Enabled = config.ddclient_ipv6;
+      this.ddclient_configured = config.ddclient_configured;
 
       this.loading.getConfiguration = false;
       this.focusElement("ddclient_host");
@@ -353,7 +355,7 @@ export default {
         }
         isValidationOk = false;
       }
-      if (!this.ddclient_password) {
+      if (!this.ddclient_password && !this.ddclient_configured) {
         this.error.ddclient_password = "common.required";
 
         if (isValidationOk) {
