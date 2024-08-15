@@ -60,7 +60,8 @@
     "ddclient_daemon_3600s": "1 hour",
     "enable_ipv6": "Enable IPv6 automatic update",
     "ddclient_password_placeholder_leave_empty_for_unchanged": "Leave empty for unchanged password",
-    "ddclient_password_placeholder_write_password_here": "Write password here"
+    "ddclient_password_placeholder_write_password_here": "Write password here",
+    "ddclient_documentation": "The ddclient documentation {documentation}"
   },
   "about": {
     "title": "About"

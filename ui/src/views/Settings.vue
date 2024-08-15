@@ -7,6 +7,19 @@
     <cv-row>
       <cv-column class="page-title">
         <h2>{{ $t("settings.title") }}</h2>
+        <div class="title-description mg-bottom-md">
+          <i18n path="settings.ddclient_documentation" tag="p">
+            <template v-slot:documentation>
+              <cv-link
+                href="https://ddclient.net/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                ddclient.net
+              </cv-link>
+            </template>
+          </i18n>
+        </div>
       </cv-column>
     </cv-row>
     <cv-row v-if="error.getConfiguration">
@@ -238,6 +251,7 @@ export default {
       isIpv6Enabled: false,
       ddclient_ipv6: false,
       ddclient_configured: false,
+      toggleAccordion: [false],
       loading: {
         getConfiguration: false,
         configureModule: false,
