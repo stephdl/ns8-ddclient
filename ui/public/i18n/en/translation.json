@@ -41,7 +41,7 @@
     "ddclient_fqdn": "dynamic domain name (FQDN)",
     "ddclient_fqdn_tooltip": "Fully qualified domain name (FQDN) to update",
     "ddclient_protocol": "ddclient protocol",
-    "ddclient_protocol_tooltip": "Protocol to use to update the dynamic domain name: dyndns2, namecheap, noip, etc. See ddclient documentation",
+    "ddclient_protocol_tooltip": "Protocol to update the dynamic domain name: See ddclient documentation",
     "provider_fqdn": "FQDN of provider server",
     "ddclient_login": "ddclient login",
     "ddclient_password": "ddclient password",
@@ -60,7 +60,8 @@
     "ddclient_daemon_3600s": "1 hour",
     "enable_ipv6": "Enable IPv6 automatic update",
     "ddclient_password_placeholder_leave_empty_for_unchanged": "Leave empty for unchanged password",
-    "ddclient_password_placeholder_write_password_here": "Write password here"
+    "ddclient_password_placeholder_write_password_here": "Write password here",
+    "ddclient_documentation": "The ddclient documentation {documentation}"
   },
   "about": {
     "title": "About"

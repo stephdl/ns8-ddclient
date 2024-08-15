@@ -7,6 +7,19 @@
     <cv-row>
       <cv-column class="page-title">
         <h2>{{ $t("settings.title") }}</h2>
+        <div class="title-description mg-bottom-md">
+          <i18n path="settings.ddclient_documentation" tag="p">
+            <template v-slot:documentation>
+              <cv-link
+                href="https://ddclient.net/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                ddclient.net
+              </cv-link>
+            </template>
+          </i18n>
+        </div>
       </cv-column>
     </cv-row>
     <cv-row v-if="error.getConfiguration">
@@ -46,19 +59,35 @@
                 $t("settings.ddclient_fqdn_tooltip")
               }}</template>
             </NsTextInput>
-            <NsTextInput
-              :label="$t('settings.ddclient_protocol')"
-              placeholder="dyndns2"
-              v-model.trim="ddclient_protocol"
-              class="mg-bottom"
+            <cv-dropdown
+              class="maxwidth"
+              :light="true"
+              v-model="ddclient_protocol"
+              :up="false"
+              :inline="false"
+              :helper-text="$t('settings.ddclient_protocol_tooltip')"
+              :hide-selected="false"
               :invalid-message="$t(error.ddclient_protocol)"
+              :label="$t('settings.ddclient_protocol')"
               :disabled="loading.getConfiguration || loading.configureModule"
-              ref="ddclient_protocol"
             >
-              <template #tooltip>{{
-                $t("settings.ddclient_protocol_tooltip")
-              }}</template>
-            </NsTextInput>
+              <cv-dropdown-item value="changeip">changeip</cv-dropdown-item>
+              <cv-dropdown-item value="dnspark">dnspark</cv-dropdown-item>
+              <cv-dropdown-item value="dslreports1"
+                >dslreports1</cv-dropdown-item
+              >
+              <cv-dropdown-item value="duckdns">duckdns</cv-dropdown-item>
+              <cv-dropdown-item value="dyndns1">dyndns1</cv-dropdown-item>
+              <cv-dropdown-item value="dyndns2">dyndns2</cv-dropdown-item>
+              <cv-dropdown-item value="easydns">easydns</cv-dropdown-item>
+              <cv-dropdown-item value="namecheap">namecheap</cv-dropdown-item>
+              <cv-dropdown-item value="zoneedit1">zoneedit1</cv-dropdown-item>
+              <cv-dropdown-item value="googledomains"
+                >googledomains</cv-dropdown-item
+              >
+              <cv-dropdown-item value="changeip">nsupdate</cv-dropdown-item>
+              <cv-dropdown-item value="changeip">porkbun</cv-dropdown-item>
+            </cv-dropdown>
             <NsTextInput
               :label="$t('settings.provider_fqdn')"
               placeholder="providers.example.org"
@@ -81,7 +110,15 @@
             </NsTextInput>
             <NsTextInput
               :label="$t('settings.ddclient_password')"
-              :placeholder="ddclient_configured ? $t('settings.ddclient_password_placeholder_leave_empty_for_unchanged') : $t('settings.ddclient_password_placeholder_write_password_here')"
+              :placeholder="
+                ddclient_configured
+                  ? $t(
+                      'settings.ddclient_password_placeholder_leave_empty_for_unchanged'
+                    )
+                  : $t(
+                      'settings.ddclient_password_placeholder_write_password_here'
+                    )
+              "
               type="password"
               v-model.trim="ddclient_password"
               class="mg-bottom"
@@ -214,6 +251,7 @@ export default {
       isIpv6Enabled: false,
       ddclient_ipv6: false,
       ddclient_configured: false,
+      toggleAccordion: [false],
       loading: {
         getConfiguration: false,
         configureModule: false,
