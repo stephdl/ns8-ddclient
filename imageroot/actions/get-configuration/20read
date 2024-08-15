@@ -21,11 +21,16 @@ config = {}
 # Read current configuration from the environment file
 config["ddclient_host"] = os.getenv("DDCLIENT_HOST","")
 config["ddclient_login"] = os.getenv("DDCLIENT_LOGIN","")
-config["ddclient_password"] = os.getenv("DDCLIENT_PASSWORD","")
 config["ddclient_protocol"] = os.getenv("DDCLIENT_PROTOCOL","")
 config["ddclient_server"] = os.getenv("DDCLIENT_SERVER","")
 config["ddclient_daemon"] = os.getenv("DDCLIENT_DAEMON","300")
 config["ddclient_ipv6"] = True if os.getenv("DDCLIENT_IPV6","") == "webv6" else False
+
+if os.path.exists("password.env"):
+    config["ddclient_password"] = agent.read_envfile("password.env")["DDCLIENT_PASSWORD"]
+else:
+    config["ddclient_password"] = ""
+
 
 def get_ip(version='-4'):
     try:
