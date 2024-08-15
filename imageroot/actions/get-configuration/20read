@@ -27,9 +27,11 @@ config["ddclient_daemon"] = os.getenv("DDCLIENT_DAEMON","300")
 config["ddclient_ipv6"] = True if os.getenv("DDCLIENT_IPV6","") == "webv6" else False
 
 if os.path.exists("password.env"):
-    config["ddclient_password"] = agent.read_envfile("password.env")["DDCLIENT_PASSWORD"]
+    config["ddclient_configured"] = True
 else:
-    config["ddclient_password"] = ""
+    config["ddclient_configured"] = False
+
+config["ddclient_password"] = ""
 
 
 def get_ip(version='-4'):

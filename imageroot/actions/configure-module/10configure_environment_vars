@@ -8,6 +8,7 @@
 import json
 import sys
 import agent
+import os
 
 # Try to parse the stdin as JSON.
 # If parsing fails, output everything to stderr
@@ -19,4 +20,6 @@ agent.set_env("DDCLIENT_PROTOCOL", data["ddclient_protocol"])
 agent.set_env("DDCLIENT_SERVER", data["ddclient_server"])
 agent.set_env("DDCLIENT_DAEMON", data["ddclient_daemon"])
 agent.set_env("DDCLIENT_IPV6", "webv6" if data["ddclient_ipv6"] else "")
-agent.write_envfile("password.env", {"DDCLIENT_PASSWORD": data["ddclient_password"]})
+
+if data["ddclient_password"] !="":
+    agent.write_envfile("password.env", {"DDCLIENT_PASSWORD": data["ddclient_password"]})
