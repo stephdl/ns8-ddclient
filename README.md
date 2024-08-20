@@ -1,33 +1,8 @@
 # ns8-ddclient
 
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
-
-1. Click on [Use this template](https://github.com/NethServer/ns8-ddclient/generate).
-   Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
-   Do not end your module name with a number, like ~~`ns8-baaad2`~~!
-
-1. Clone the repository, enter the cloned directory and
-   [configure your GIT identity](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity)
-
-1. Rename some references inside the repo:
-   ```
-   modulename=$(basename $(pwd) | sed 's/^ns8-//') &&
-   git mv imageroot/systemd/user/ddclient.service imageroot/systemd/user/${modulename}.service &&
-   git mv imageroot/systemd/user/ddclient-app.service imageroot/systemd/user/${modulename}-app.service && 
-   git mv tests/ddclient.robot tests/${modulename}.robot &&
-   sed -i "s/ddclient/${modulename}/g" $(find .github/ * -type f) &&
-   git commit -a -m "Repository initialization"
-   ```
-
-1. Edit this `README.md` file, by replacing this section with your module
-   description
-
-1. Adjust `.github/workflows` to your needs. `clean-registry.yml` might
-   need the proper list of image names to work correctly. Unused workflows
-   can be disabled from the GitHub Actions interface.
-
-1. Commit and push your local changes
+DDclient is a dynamic DNS (DDNS) update client. It automatically updates your domain's DNS records to reflect changes in your IP address, 
+allowing you to access your network or services remotely even if your IP address is not static. 
+This is especially useful for home users or small businesses using dynamic IP addresses provided by their ISPs.
 
 ## Install
 
@@ -45,9 +20,13 @@ Output example:
 Let's assume that the mattermost instance is named `ddclient1`.
 
 Launch `configure-module`, by setting the following parameters:
-- `host`: a fully qualified domain name for the application
-- `http2https`: enable or disable HTTP to HTTPS redirection (true/false)
-- `lets_encrypt`: enable or disable Let's Encrypt certificate (true/false)
+- `ddclient_host`: a fully qualified domain name for the dynamic hostname
+- `ddclient_ipv6`: enable the ipv6
+- `ddclient_login`: login to the provider
+- `ddclient_password`: password to the provider
+- `ddclient_protocol`: protocol to the provider
+- `ddclient_server`: FQDN to the provider api
+- `ddclient_daemon`: time renew in second to the provider
 
 
 Example:
@@ -55,16 +34,19 @@ Example:
 ```
 api-cli run configure-module --agent module/ddclient1 --data - <<EOF
 {
-  "host": "ddclient.domain.com",
-  "http2https": true,
-  "lets_encrypt": false
+    "ddclient_daemon": "300",
+    "ddclient_host": "domain.dynu.net",
+    "ddclient_ipv6": false,
+    "ddclient_login": "username",
+    "ddclient_password": "XXXXXXX",
+    "ddclient_protocol": "dyndns2",
+    "ddclient_server": "api.dynu.net"
 }
 EOF
 ```
 
 The above command will:
 - start and configure the ddclient instance
-- configure a virtual host for trafik to access the instance
 
 ## Get the configuration
 You can retrieve the configuration with
@@ -119,31 +101,14 @@ on the root terminal
 
 - if you want to debug a container or see environment inside
  `runagent -m ddclient1`
- ```
+
+```
 podman ps
-CONTAINER ID  IMAGE                                      COMMAND               CREATED        STATUS        PORTS                    NAMES
-d292c6ff28e9  localhost/podman-pause:4.6.1-1702418000                          9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  80b8de25945f-infra
-d8df02bf6f4a  docker.io/library/mariadb:10.11.5          --character-set-s...  9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  mariadb-app
-9e58e5bd676f  docker.io/library/nginx:stable-alpine3.17  nginx -g daemon o...  9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  ddclient-app
 ```
 
 you can see what environment variable is inside the container
 ```
 podman exec  ddclient-app env
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-TERM=xterm
-PKG_RELEASE=1
-MARIADB_DB_HOST=127.0.0.1
-MARIADB_DB_NAME=ddclient
-MARIADB_IMAGE=docker.io/mariadb:10.11.5
-MARIADB_DB_TYPE=mysql
-container=podman
-NGINX_VERSION=1.24.0
-NJS_VERSION=0.7.12
-MARIADB_DB_USER=ddclient
-MARIADB_DB_PASSWORD=ddclient
-MARIADB_DB_PORT=3306
-HOME=/root
 ```
 
 you can run a shell inside the container
