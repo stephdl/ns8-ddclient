@@ -16,7 +16,6 @@ original_environment = request['environment']
 for evar in [
         "DDCLIENT_HOST",
         "DDCLIENT_LOGIN",
-        "DDCLIENT_PASSWORD",
         "DDCLIENT_PROTOCOL",
         "DDCLIENT_SERVER",
         "DDCLIENT_DAEMON",

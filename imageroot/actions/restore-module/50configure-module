@@ -16,7 +16,7 @@ renv = request['environment']
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "ddclient_host": renv["DDCLIENT_HOST"],
     "ddclient_login": renv["DDCLIENT_LOGIN"],
-    "ddclient_password": renv["DDCLIENT_PASSWORD"],
+    "ddclient_password": agent.read_envfile("password.env")["DDCLIENT_PASSWORD"],
     "ddclient_protocol": renv["DDCLIENT_PROTOCOL"],
     "ddclient_server": renv["DDCLIENT_SERVER"],
     "ddclient_daemon": renv["DDCLIENT_DAEMON"],
