@@ -73,20 +73,16 @@
             >
               <cv-dropdown-item value="changeip">changeip</cv-dropdown-item>
               <cv-dropdown-item value="dnspark">dnspark</cv-dropdown-item>
-              <cv-dropdown-item value="dslreports1"
-                >dslreports1</cv-dropdown-item
-              >
+              <cv-dropdown-item value="dslreports1">dslreports1</cv-dropdown-item>
               <cv-dropdown-item value="duckdns">duckdns</cv-dropdown-item>
               <cv-dropdown-item value="dyndns1">dyndns1</cv-dropdown-item>
               <cv-dropdown-item value="dyndns2">dyndns2</cv-dropdown-item>
               <cv-dropdown-item value="easydns">easydns</cv-dropdown-item>
               <cv-dropdown-item value="namecheap">namecheap</cv-dropdown-item>
               <cv-dropdown-item value="zoneedit1">zoneedit1</cv-dropdown-item>
-              <cv-dropdown-item value="googledomains"
-                >googledomains</cv-dropdown-item
-              >
-              <cv-dropdown-item value="changeip">nsupdate</cv-dropdown-item>
-              <cv-dropdown-item value="changeip">porkbun</cv-dropdown-item>
+              <cv-dropdown-item value="googledomains">googledomains</cv-dropdown-item>
+              <cv-dropdown-item value="nsupdate">nsupdate</cv-dropdown-item>
+              <cv-dropdown-item value="porkbun">porkbun</cv-dropdown-item>
             </cv-dropdown>
             <NsTextInput
               :label="$t('settings.provider_fqdn')"
