@@ -1,57 +1,95 @@
 {
-    "error": {
-        "403": "Operação não autorizada",
-        "cannot_retrieve_installed_modules": "Não é possível recuperar módulos instalados",
-        "401": "Autenticação inválida",
-        "cannot_retrieve_module_info": "Não é possível recuperar informações do módulo",
-        "generic_error": "Algo deu errado",
-        "error": "Erro",
-        "network_timeout": "Tempo limite da rede",
-        "404": "Recurso não encontrado",
-        "network_error": "Erro de rede",
-        "validation_error": "Erros de validação"
-    },
-    "settings": {
-        "test_field": "Campo de teste",
-        "configure_instance": "Configurar {instância}",
-        "save": "Gravar",
-        "title": "Configurações"
-    },
-    "common": {
-        "required": "Obrigatório",
-        "work_in_progress": "Trabalho em progresso",
-        "processing": "Processando..."
-    },
-    "status": {
-        "created": "Criado",
-        "size": "Tamanho",
-        "name": "Nome",
-        "no_images": "Sem imagens",
-        "app_volumes": "Volume do aplicativo | Volumes dos aplicativos",
-        "services": "Serviço | Serviços",
-        "app_images": "Imagem do aplicativo | Imagens dos aplicativos",
-        "no_services": "Nenhum serviço",
-        "app_instance": "Instância do aplicativo",
-        "mount": "Montar",
-        "title": "Estado",
-        "installation_node": "Nó de instalação",
-        "node": "Node",
-        "no_volumes": "Sem volumes"
-    },
-    "about": {
-        "title": "Sobre"
-    },
-    "action": {
-        "list-backup-repositories": "Listar repositórios de backup",
-        "get-module-info": "Obtenha informações do módulo",
-        "list-installed-modules": "Listar módulos instalados",
-        "list-backups": "Listar backups",
-        "get-status": "Obter status",
-        "configure-module": "Configurar módulo",
-        "get-configuration": "Obter configuração",
-        "get-name": "Obter nome"
-    },
-    "task": {
-        "cannot_create_task": "Não é possível criar a tarefa {action}"
-    }
+  "common": {
+    "required": "Obrigatório",
+    "work_in_progress": "Trabalho em andamento",
+    "processing": "Processando..."
+  },
+  "status": {
+    "title": "Status",
+    "app_instance": "Instância do aplicativo",
+    "services": "Serviço | Serviços",
+    "app_images": "Imagem do aplicativo | Imagens do aplicativo",
+    "app_volumes": "Volume do aplicativo | Volumes do aplicativo",
+    "installation_node": "Nó de instalação",
+    "node": "Nó",
+    "name": "Nome",
+    "size": "Tamanho",
+    "created": "Criado",
+    "mount": "Montar",
+    "no_services": "Sem serviços",
+    "no_images": "Sem imagens",
+    "no_volumes": "Sem volumes",
+    "ddclient_webapp": "Serviços de DNS Dinâmico",
+    "not_configured": "Não configurado",
+    "open_webapp": "Abrir ddclient",
+    "configure": "Configurar"
+  },
+  "settings": {
+    "title": "Configurações",
+    "configure_instance": "Configurar {instance}",
+    "save": "Salvar",
+    "lets_encrypt": "Solicitar certificado LE",
+    "http_to_https": "Forçar HTTPS",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "advanced": "Avançado",
+    "configuring": "Configurando",
+    "instance_configuration": "Configurar ddclient",
+    "domain_already_used_in_traefik": "Domínio já utilizado no Traefik",
+    "host_pattern": "Deve ser um nome de domínio totalmente qualificado válido",
+    "host_format": "Deve ser um nome de domínio totalmente qualificado válido",
+    "ddclient_fqdn": "Nome de domínio dinâmico (FQDN)",
+    "ddclient_fqdn_tooltip": "Nome de domínio totalmente qualificado (FQDN) a ser atualizado",
+    "ddclient_protocol": "Protocolo ddclient",
+    "ddclient_protocol_tooltip": "Protocolo para atualizar o nome de domínio dinâmico: Consulte a documentação ddclient",
+    "provider_fqdn": "FQDN do servidor do provedor",
+    "ddclient_login": "Login do ddclient",
+    "ddclient_password": "Senha do ddclient",
+    "external_ip": "IP externo",
+    "external_ip_of_the_server_both": "IP externo do servidor ipv4: {ipv4} ipv6: {ipv6}",
+    "external_ip_of_the_server_ipv4": "IP externo do servidor ipv4: {ipv4}, sem ipv6",
+    "external_ip_of_the_server_ipv6": "IP externo do servidor ipv6: {ipv6}, sem ipv4",
+    "ddclient_daemon_helper_text": "O daemon ddclient atualizará o nome de domínio dinâmico a cada X minutos",
+    "select_ddclient_daemon_renew": "Selecionar intervalo de renovação",
+    "ddclient_daemon_300s": "5 minutos",
+    "ddclient_daemon_600s": "10 minutos",
+    "ddclient_daemon_900s": "15 minutos",
+    "ddclient_daemon_1200s": "20 minutos",
+    "ddclient_daemon_1500s": "25 minutos",
+    "ddclient_daemon_1800s": "30 minutos",
+    "ddclient_daemon_3600s": "1 hora",
+    "enable_ipv6": "Habilitar atualização automática IPv6",
+    "ddclient_password_placeholder_leave_empty_for_unchanged": "Deixe vazio se a senha não for alterada",
+    "ddclient_password_placeholder_write_password_here": "Escreva a senha aqui",
+    "ddclient_documentation": "Documentação do ddclient {documentation}"
+  },
+  "about": {
+    "title": "Sobre"
+  },
+  "task": {
+    "cannot_create_task": "Não foi possível criar a tarefa {action}"
+  },
+  "action": {
+    "get-status": "Obter status",
+    "get-configuration": "Obter configuração",
+    "configure-module": "Configurar módulo",
+    "get-module-info": "Obter informações do módulo",
+    "get-name": "Obter nome",
+    "list-backup-repositories": "Listar repositórios de backup",
+    "list-backups": "Listar backups",
+    "list-installed-modules": "Listar módulos instalados"
+  },
+  "error": {
+    "error": "Erro",
+    "generic_error": "Algo deu errado",
+    "validation_error": "Erro de validação",
+    "network_error": "Erro de rede",
+    "network_timeout": "Tempo de rede esgotado",
+    "401": "Autenticação inválida",
+    "403": "Operação não autorizada",
+    "404": "Recurso não encontrado",
+    "cannot_retrieve_module_info": "Não foi possível recuperar as informações do módulo",
+    "cannot_retrieve_installed_modules": "Não foi possível recuperar os módulos instalados",
+    "cannot_retrieve_configuration": "Não foi possível recuperar a configuração"
+  }
 }

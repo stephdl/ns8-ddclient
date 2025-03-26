@@ -1,57 +1,95 @@
 {
-    "common": {
-        "required": "Obbligatorio",
-        "processing": "Elaborazione in corso...",
-        "work_in_progress": "In lavorazione"
-    },
-    "status": {
-        "node": "Nodo",
-        "services": "Servizio | Servizi",
-        "no_volumes": "Nessun volume",
-        "title": "Stato",
-        "name": "Nome",
-        "size": "Dimensione",
-        "created": "Creato",
-        "no_services": "Nessun servizio",
-        "no_images": "Nessuna immagine",
-        "app_images": "Immagine app|Immagini app",
-        "app_instance": "Istanza app",
-        "app_volumes": "Volume app|Volumi app",
-        "installation_node": "Nodo",
-        "mount": "Percorso di mount"
-    },
-    "settings": {
-        "save": "Salva",
-        "title": "Impostazioni",
-        "configure_instance": "Configura {instance}",
-        "test_field": "Campo di test"
-    },
-    "error": {
-        "error": "Errore",
-        "404": "Risorsa non trovata",
-        "validation_error": "Errore di validazione",
-        "network_error": "Errore di rete",
-        "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati",
-        "cannot_retrieve_module_info": "Impossibile recuperare info modulo",
-        "network_timeout": "Timeout di rete",
-        "generic_error": "Qualcosa è andato storto",
-        "401": "Autenticazione non valida",
-        "403": "Operazione non autorizzata"
-    },
-    "action": {
-        "configure-module": "Configura modulo",
-        "get-configuration": "Visualizza configurazione",
-        "get-status": "Visualizza stato",
-        "get-module-info": "Visualizza info modulo",
-        "get-name": "Visualizza nome",
-        "list-backup-repositories": "Elenca repository di backup",
-        "list-backups": "Elenca backup",
-        "list-installed-modules": "Elenco moduli installati"
-    },
-    "task": {
-        "cannot_create_task": "Impossibile eseguire task {action}"
-    },
-    "about": {
-        "title": "Informazioni"
-    }
+  "common": {
+    "required": "Richiesto",
+    "work_in_progress": "Lavoro in corso",
+    "processing": "Elaborazione..."
+  },
+  "status": {
+    "title": "Stato",
+    "app_instance": "Istanza dell'applicazione",
+    "services": "Servizio | Servizi",
+    "app_images": "Immagine dell'app | Immagini dell'app",
+    "app_volumes": "Volume dell'app | Volumi dell'app",
+    "installation_node": "Nodo di installazione",
+    "node": "Nodo",
+    "name": "Nome",
+    "size": "Dimensione",
+    "created": "Creato",
+    "mount": "Montaggio",
+    "no_services": "Nessun servizio",
+    "no_images": "Nessuna immagine",
+    "no_volumes": "Nessun volume",
+    "ddclient_webapp": "Servizi DNS dinamici",
+    "not_configured": "Non configurato",
+    "open_webapp": "Apri ddclient",
+    "configure": "Configura"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "configure_instance": "Configura {instance}",
+    "save": "Salva",
+    "lets_encrypt": "Richiedi certificato LE",
+    "http_to_https": "Forza HTTPS",
+    "enabled": "Abilitato",
+    "disabled": "Disabilitato",
+    "advanced": "Avanzato",
+    "configuring": "Configurazione in corso",
+    "instance_configuration": "Configura ddclient",
+    "domain_already_used_in_traefik": "Dominio già in uso in Traefik",
+    "host_pattern": "Deve essere un nome di dominio completamente qualificato valido",
+    "host_format": "Deve essere un nome di dominio completamente qualificato valido",
+    "ddclient_fqdn": "Nome di dominio dinamico (FQDN)",
+    "ddclient_fqdn_tooltip": "Nome di dominio completamente qualificato (FQDN) da aggiornare",
+    "ddclient_protocol": "Protocollo ddclient",
+    "ddclient_protocol_tooltip": "Protocollo per aggiornare il nome di dominio dinamico: consulta la documentazione di ddclient",
+    "provider_fqdn": "FQDN del server del provider",
+    "ddclient_login": "Login ddclient",
+    "ddclient_password": "Password ddclient",
+    "external_ip": "IP esterna",
+    "external_ip_of_the_server_both": "IP esterna del server ipv4: {ipv4} ipv6: {ipv6}",
+    "external_ip_of_the_server_ipv4": "IP esterna del server ipv4: {ipv4}, senza ipv6",
+    "external_ip_of_the_server_ipv6": "IP esterna del server ipv6: {ipv6}, senza ipv4",
+    "ddclient_daemon_helper_text": "Il demone ddclient aggiornerà il nome di dominio dinamico ogni X minuti",
+    "select_ddclient_daemon_renew": "Seleziona l'intervallo di rinnovo",
+    "ddclient_daemon_300s": "5 minuti",
+    "ddclient_daemon_600s": "10 minuti",
+    "ddclient_daemon_900s": "15 minuti",
+    "ddclient_daemon_1200s": "20 minuti",
+    "ddclient_daemon_1500s": "25 minuti",
+    "ddclient_daemon_1800s": "30 minuti",
+    "ddclient_daemon_3600s": "1 ora",
+    "enable_ipv6": "Abilita aggiornamento automatico IPv6",
+    "ddclient_password_placeholder_leave_empty_for_unchanged": "Lascia vuoto se la password non cambia",
+    "ddclient_password_placeholder_write_password_here": "Scrivi la password qui",
+    "ddclient_documentation": "La documentazione di ddclient {documentation}"
+  },
+  "about": {
+    "title": "Informazioni"
+  },
+  "task": {
+    "cannot_create_task": "Impossibile creare il task {action}"
+  },
+  "action": {
+    "get-status": "Ottieni stato",
+    "get-configuration": "Ottieni configurazione",
+    "configure-module": "Configura modulo",
+    "get-module-info": "Ottieni informazioni modulo",
+    "get-name": "Ottieni nome",
+    "list-backup-repositories": "Elenca repository di backup",
+    "list-backups": "Elenca i backup",
+    "list-installed-modules": "Elenca i moduli installati"
+  },
+  "error": {
+    "error": "Errore",
+    "generic_error": "Qualcosa è andato storto",
+    "validation_error": "Errore di validazione",
+    "network_error": "Errore di rete",
+    "network_timeout": "Timeout di rete",
+    "401": "Autenticazione non valida",
+    "403": "Operazione non autorizzata",
+    "404": "Risorsa non trovata",
+    "cannot_retrieve_module_info": "Impossibile recuperare le informazioni del modulo",
+    "cannot_retrieve_installed_modules": "Impossibile recuperare i moduli installati",
+    "cannot_retrieve_configuration": "Impossibile recuperare la configurazione"
+  }
 }
