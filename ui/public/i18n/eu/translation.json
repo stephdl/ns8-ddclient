@@ -1,57 +1,95 @@
 {
-    "error": {
-        "403": "Eragiketa baimendu gabea",
-        "cannot_retrieve_installed_modules": "Ezin dira instalatutako moduluak berreskuratu",
-        "401": "Autentifikazio baliogabea",
-        "cannot_retrieve_module_info": "Ezin da moduluaren informazioa berreskuratu",
-        "generic_error": "Zerbait okertu da",
-        "error": "Errorea",
-        "network_timeout": "Sarearen denbora-muga",
-        "404": "Baliabidea ez da aurkitu",
-        "network_error": "Sare-errorea",
-        "validation_error": "Balioztatze-errorea"
-    },
-    "settings": {
-        "test_field": "Proba-eremua",
-        "configure_instance": "{instance} konfiguratu",
-        "save": "Gorde",
-        "title": "Ezarpenak"
-    },
-    "common": {
-        "required": "Beharrezkoa",
-        "work_in_progress": "Lanak martxan",
-        "processing": "Prozesatzen..."
-    },
-    "status": {
-        "created": "Sortuta",
-        "size": "Tamaina",
-        "name": "Izena",
-        "no_images": "Irudirik ez",
-        "app_volumes": "Aplikazioaren bolumena | Aplikazioen bolumenak",
-        "services": "Zerbitzua | Zerbitzuak",
-        "app_images": "Aplikazioaren irudia | Aplikazioen irudiak",
-        "no_services": "Zerbitzurik ez",
-        "app_instance": "Aplikazioaren instantzia",
-        "mount": "Muntatu",
-        "title": "Egoera",
-        "installation_node": "Instalazio-nodoa",
-        "node": "Nodoa",
-        "no_volumes": "Bolumenik ez"
-    },
-    "about": {
-        "title": "Honi buruz"
-    },
-    "action": {
-        "list-backup-repositories": "Babeskopien biltegiak ikusi",
-        "get-module-info": "Moduluaren informazioa berreskuratu",
-        "list-installed-modules": "Instalatutako moduluak ikusi",
-        "list-backups": "Babeskopiak ikusi",
-        "get-status": "Egoera berreskuratu",
-        "configure-module": "Modulua konfiguratu",
-        "get-configuration": "Konfigurazioa berreskuratu",
-        "get-name": "Izena berreskuratu"
-    },
-    "task": {
-        "cannot_create_task": "Ezin da zeregina {action} sortu"
-    }
+  "common": {
+    "required": "Beharrezkoa",
+    "work_in_progress": "Lana eginda",
+    "processing": "Prozesatzen..."
+  },
+  "status": {
+    "title": "Egoera",
+    "app_instance": "Aplikazioaren instanzia",
+    "services": "Zerbitzua | Zerbitzuak",
+    "app_images": "Aplikazioaren irudia | Aplikazioaren irudiak",
+    "app_volumes": "Aplikazioaren bolumena | Aplikazioaren bolumenak",
+    "installation_node": "Instalazio nodoa",
+    "node": "Nodoa",
+    "name": "Izena",
+    "size": "Tamaina",
+    "created": "Sortua",
+    "mount": "Muntatu",
+    "no_services": "Ez dago zerbitzurik",
+    "no_images": "Ez dago irudirik",
+    "no_volumes": "Ez dago bolumenik",
+    "ddclient_webapp": "DNS dinamikoen zerbitzuak",
+    "not_configured": "Ez dago konfiguraturik",
+    "open_webapp": "Ireki ddclient",
+    "configure": "Konfiguratu"
+  },
+  "settings": {
+    "title": "Ezarpenak",
+    "configure_instance": "Konfiguratu {instance}",
+    "save": "Gorde",
+    "lets_encrypt": "Eskatu LE ziurtagiria",
+    "http_to_https": "Indartu HTTPS",
+    "enabled": "Aktibatuta",
+    "disabled": "Desaktibatuta",
+    "advanced": "Aurreratua",
+    "configuring": "Konfiguratzen",
+    "instance_configuration": "Konfiguratu ddclient",
+    "domain_already_used_in_traefik": "Domena Traefiken erabiltzen da jada",
+    "host_pattern": "Izena baliozko domeinu oso bat izan behar du",
+    "host_format": "Izena baliozko domeinu oso bat izan behar du",
+    "ddclient_fqdn": "Domeinu dinamikoko izena (FQDN)",
+    "ddclient_fqdn_tooltip": "Domeinu osoaren izena (FQDN) eguneratzeko",
+    "ddclient_protocol": "ddclient protokoloa",
+    "ddclient_protocol_tooltip": "Domeinu dinamikoko izena eguneratzeko protokoloa: Begiratu ddclient dokumentazioa",
+    "provider_fqdn": "Hornitzailearen FQDN",
+    "ddclient_login": "ddclient saioa",
+    "ddclient_password": "ddclient pasahitza",
+    "external_ip": "IP kanpokoa",
+    "external_ip_of_the_server_both": "Zerbitzariaren IP kanpokoa ipv4: {ipv4} ipv6: {ipv6}",
+    "external_ip_of_the_server_ipv4": "Zerbitzariaren IP kanpokoa ipv4: {ipv4}, ez dago ipv6",
+    "external_ip_of_the_server_ipv6": "Zerbitzariaren IP kanpokoa ipv6: {ipv6}, ez dago ipv4",
+    "ddclient_daemon_helper_text": "ddclient daemonek domeinu dinamikoko izena eguneratuko du X minuturo",
+    "select_ddclient_daemon_renew": "Aukeratu berritzeko tartea",
+    "ddclient_daemon_300s": "5 minutu",
+    "ddclient_daemon_600s": "10 minutu",
+    "ddclient_daemon_900s": "15 minutu",
+    "ddclient_daemon_1200s": "20 minutu",
+    "ddclient_daemon_1500s": "25 minutu",
+    "ddclient_daemon_1800s": "30 minutu",
+    "ddclient_daemon_3600s": "1 ordu",
+    "enable_ipv6": "Gaitu IPv6 automatikoki eguneratzeko aukera",
+    "ddclient_password_placeholder_leave_empty_for_unchanged": "Utzi hutsik pasahitza aldatu gabe uzteko",
+    "ddclient_password_placeholder_write_password_here": "Idatzi pasahitza hemen",
+    "ddclient_documentation": "ddclient dokumentazioa {documentation}"
+  },
+  "about": {
+    "title": "Ezagun"
+  },
+  "task": {
+    "cannot_create_task": "Ez da posible {action} eginkizuna sortzea"
+  },
+  "action": {
+    "get-status": "Egoera lortu",
+    "get-configuration": "Konfigurazioa lortu",
+    "configure-module": "Modulua konfiguratu",
+    "get-module-info": "Moduluaren informazioa lortu",
+    "get-name": "Izena lortu",
+    "list-backup-repositories": "Segurtasun-kopiaren biltegiak zerrendatu",
+    "list-backups": "Segurtasun-kopien zerrenda",
+    "list-installed-modules": "Instalatutako moduluak zerrendatu"
+  },
+  "error": {
+    "error": "Errorea",
+    "generic_error": "Zerbait gaizki joan da",
+    "validation_error": "Balidazio errorea",
+    "network_error": "Sare errorea",
+    "network_timeout": "Sareko denbora-tartea amaitu da",
+    "401": "Autentifikazio baliogabea",
+    "403": "Eragiketa ez dago baimenduta",
+    "404": "Baliogabeko baliabidea",
+    "cannot_retrieve_module_info": "Ez da posible moduluaren informazioa lortzea",
+    "cannot_retrieve_installed_modules": "Ez da posible instalatutako moduluak lortzea",
+    "cannot_retrieve_configuration": "Ez da posible konfigurazioa lortzea"
+  }
 }

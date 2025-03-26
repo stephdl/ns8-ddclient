@@ -1,35 +1,95 @@
 {
-    "common": {
-        "required": "Obrigatório",
-        "work_in_progress": "Em progresso",
-        "processing": "Procesando..."
-    },
-    "status": {
-        "services": "Serviço | Serviços",
-        "app_instance": "Instância do aplicativo",
-        "title": "Estado"
-    },
-    "error": {
-        "403": "Operation not authorized",
-        "401": "Invalid authentication",
-        "generic_error": "Something went wrong",
-        "error": "Error",
-        "network_timeout": "Network timeout",
-        "404": "Resource not found",
-        "network_error": "Network error",
-        "validation_error": "Validation error"
-    },
-    "about": {
-        "title": "About"
-    },
-    "action": {
-        "list-backup-repositories": "List backup repositories",
-        "list-backups": "List backups"
-    },
-    "task": {
-        "cannot_create_task": "Cannot create task {action}"
-    },
-    "settings": {
-        "title": "Settings"
-    }
+  "common": {
+    "required": "Obrigatório",
+    "work_in_progress": "Trabalho em andamento",
+    "processing": "Processando..."
+  },
+  "status": {
+    "title": "Status",
+    "app_instance": "Instância do aplicativo",
+    "services": "Serviço | Serviços",
+    "app_images": "Imagem do aplicativo | Imagens do aplicativo",
+    "app_volumes": "Volume do aplicativo | Volumes do aplicativo",
+    "installation_node": "Nó de instalação",
+    "node": "Nó",
+    "name": "Nome",
+    "size": "Tamanho",
+    "created": "Criado",
+    "mount": "Montar",
+    "no_services": "Sem serviços",
+    "no_images": "Sem imagens",
+    "no_volumes": "Sem volumes",
+    "ddclient_webapp": "Serviços de DNS dinâmico",
+    "not_configured": "Não configurado",
+    "open_webapp": "Abrir ddclient",
+    "configure": "Configurar"
+  },
+  "settings": {
+    "title": "Configurações",
+    "configure_instance": "Configurar {instance}",
+    "save": "Salvar",
+    "lets_encrypt": "Solicitar Certificado LE",
+    "http_to_https": "Forçar HTTPS",
+    "enabled": "Habilitado",
+    "disabled": "Desabilitado",
+    "advanced": "Avançado",
+    "configuring": "Configurando",
+    "instance_configuration": "Configurar ddclient",
+    "domain_already_used_in_traefik": "Domínio já usado no Traefik",
+    "host_pattern": "Deve ser um nome de domínio totalmente qualificado válido",
+    "host_format": "Deve ser um nome de domínio totalmente qualificado válido",
+    "ddclient_fqdn": "Nome de domínio dinâmico (FQDN)",
+    "ddclient_fqdn_tooltip": "Nome de domínio totalmente qualificado (FQDN) a ser atualizado",
+    "ddclient_protocol": "Protocolo ddclient",
+    "ddclient_protocol_tooltip": "Protocolo para atualizar o nome de domínio dinâmico: Veja a documentação do ddclient",
+    "provider_fqdn": "FQDN do servidor do provedor",
+    "ddclient_login": "Login do ddclient",
+    "ddclient_password": "Senha do ddclient",
+    "external_ip": "IP externo",
+    "external_ip_of_the_server_both": "IP externo do servidor ipv4: {ipv4} ipv6: {ipv6}",
+    "external_ip_of_the_server_ipv4": "IP externo do servidor ipv4: {ipv4}, sem ipv6",
+    "external_ip_of_the_server_ipv6": "IP externo do servidor ipv6: {ipv6}, sem ipv4",
+    "ddclient_daemon_helper_text": "O daemon ddclient atualizará o nome de domínio dinâmico a cada X minutos",
+    "select_ddclient_daemon_renew": "Selecionar intervalo de renovação",
+    "ddclient_daemon_300s": "5 minutos",
+    "ddclient_daemon_600s": "10 minutos",
+    "ddclient_daemon_900s": "15 minutos",
+    "ddclient_daemon_1200s": "20 minutos",
+    "ddclient_daemon_1500s": "25 minutos",
+    "ddclient_daemon_1800s": "30 minutos",
+    "ddclient_daemon_3600s": "1 hora",
+    "enable_ipv6": "Habilitar atualização automática do IPv6",
+    "ddclient_password_placeholder_leave_empty_for_unchanged": "Deixe em branco se a senha não for alterada",
+    "ddclient_password_placeholder_write_password_here": "Escreva a senha aqui",
+    "ddclient_documentation": "A documentação do ddclient {documentation}"
+  },
+  "about": {
+    "title": "Sobre"
+  },
+  "task": {
+    "cannot_create_task": "Não é possível criar a tarefa {action}"
+  },
+  "action": {
+    "get-status": "Obter status",
+    "get-configuration": "Obter configuração",
+    "configure-module": "Configurar módulo",
+    "get-module-info": "Obter informações do módulo",
+    "get-name": "Obter nome",
+    "list-backup-repositories": "Listar repositórios de backup",
+    "list-backups": "Listar backups",
+    "list-installed-modules": "Listar módulos instalados"
+  },
+  "error": {
+    "error": "Erro",
+    "generic_error": "Algo deu errado",
+    "validation_error": "Erro de validação",
+    "network_error": "Erro de rede",
+    "network_timeout": "Tempo de rede esgotado",
+    "401": "Autenticação inválida",
+    "403": "Operação não autorizada",
+    "404": "Recurso não encontrado",
+    "cannot_retrieve_module_info": "Não foi possível recuperar informações do módulo",
+    "cannot_retrieve_installed_modules": "Não foi possível recuperar módulos instalados",
+    "cannot_retrieve_configuration": "Não foi possível recuperar a configuração"
+  }
 }
