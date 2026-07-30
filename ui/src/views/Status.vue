@@ -44,7 +44,11 @@
         <NsInfoCard
           light
           :title="$t('status.ddclient_webapp')"
-          :description="this.ddclient_host ? this.ddclient_host : $t('status.not_configured')"
+          :description="
+            this.ddclient_host
+              ? this.ddclient_host
+              : $t('status.not_configured')
+          "
           :icon="Wikis32"
           :loading="loading.getConfiguration"
           :isErrorShown="error.getConfiguration"
