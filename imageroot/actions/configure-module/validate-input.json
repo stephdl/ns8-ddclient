@@ -9,7 +9,9 @@
             "ddclient_server": "ddclient.domain.org",
             "ddclient_login": "admin",
             "ddclient_password": "admin",
-            "ddclient_protocol": "http"
+            "ddclient_protocol": "http",
+            "ddclient_daemon": "300",
+            "ddclient_ipv6": false
         }
     ],
     "type": "object",
@@ -18,7 +20,9 @@
         "ddclient_server",
         "ddclient_login",
         "ddclient_password",
-        "ddclient_protocol"
+        "ddclient_protocol",
+        "ddclient_daemon",
+        "ddclient_ipv6"
     ],
     "properties": {
         "ddclient_host": {
@@ -44,6 +48,15 @@
         "ddclient_protocol": {
             "type": "string",
             "description": "Protocol for the api server"
+        },
+        "ddclient_daemon": {
+            "type": "string",
+            "description": "Update interval in seconds the daemon waits between two checks, like '300'",
+            "pattern": "^[0-9]+$"
+        },
+        "ddclient_ipv6": {
+            "type": "boolean",
+            "description": "Whether the IPv6 address is published alongside the IPv4 one"
         }
     }
 }

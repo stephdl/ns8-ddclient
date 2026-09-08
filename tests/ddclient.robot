@@ -7,6 +7,7 @@ ${TEST_SERVER}      members.dyndns.org
 ${TEST_LOGIN}       ns8-ci
 ${TEST_PASSWORD}    Nethesis,1234
 ${TEST_PROTOCOL}    dyndns2
+${TEST_DAEMON}      300
 
 *** Test Cases ***
 Check if ddclient is installed correctly
@@ -18,7 +19,7 @@ Check if ddclient is installed correctly
 
 Check if ddclient can be configured
     ${rc} =    Execute Command
-    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${TEST_HOST}","ddclient_server":"${TEST_SERVER}","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TEST_PASSWORD}","ddclient_protocol":"${TEST_PROTOCOL}"}'
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${TEST_HOST}","ddclient_server":"${TEST_SERVER}","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TEST_PASSWORD}","ddclient_protocol":"${TEST_PROTOCOL}","ddclient_daemon":"${TEST_DAEMON}","ddclient_ipv6":false}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
@@ -33,6 +34,7 @@ Check if ddclient configuration reads back
     Should Be Equal    ${config}[ddclient_server]      ${TEST_SERVER}
     Should Be Equal    ${config}[ddclient_login]       ${TEST_LOGIN}
     Should Be Equal    ${config}[ddclient_protocol]    ${TEST_PROTOCOL}
+    Should Be Equal    ${config}[ddclient_daemon]      ${TEST_DAEMON}
 
 Check if ddclient is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
