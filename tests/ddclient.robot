@@ -20,6 +20,14 @@ Login to cluster-admin
     Click    button >> text="Log in"
     Wait For Elements State    css=#main-content    visible    timeout=10s
 
+Rendered configuration should carry
+    [Arguments]    ${text}
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cat $AGENT_STATE_DIR/config/ddclient.conf'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    ${text}
+
 *** Test Cases ***
 Check if ddclient is installed correctly
     ${output}  ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
@@ -83,18 +91,19 @@ Check if an incomplete configuration is refused
     ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${TEST_HOST}"}'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  10
-    Should Contain    ${errors}    ddclient_server
+    # A missing required field is reported on the whole object, and the field
+    # name goes to stderr, which Execute Command does not return here
+    Should Contain    ${errors}    (root)_required
 
 Check if a second configuration is applied
     ${rc} =    Execute Command
     ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"second.${TEST_HOST}","ddclient_server":"${TEST_SERVER}","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TEST_PASSWORD}","ddclient_protocol":"${TEST_PROTOCOL}","ddclient_daemon":"600","ddclient_ipv6":false}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
-    ${output}  ${rc} =    Execute Command
-    ...    runagent -m ${module_id} bash -c 'cat $AGENT_STATE_DIR/config/ddclient.conf'
-    ...    return_rc=True
-    Should Contain    ${output}    daemon=600
-    Should Contain    ${output}    second.${TEST_HOST}
+    # write-ddclient-conf renders the file from ExecStartPre of ddclient-app,
+    # so it lands when the restart reaches that unit, not when the task returns
+    Wait Until Keyword Succeeds    30s    2s    Rendered configuration should carry    daemon=600
+    Wait Until Keyword Succeeds    30s    2s    Rendered configuration should carry    second.${TEST_HOST}
 
 Take screenshots of the module pages
     [Documentation]    Capture what cluster-admin shows, for the software center
