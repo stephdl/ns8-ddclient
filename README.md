@@ -109,11 +109,14 @@ clears them. With the same protocol, an empty secret keeps the stored one.
 For `porkbun`, when the host has a single dot, like `example.com`, and no
 root domain is given, the host itself is used as root domain.
 
-`googledomains`, `dnspark` and `nsupdate` are no longer offered. An instance
+`googledomains` and `dnspark` are no longer offered because ddclient 4
+removed them. `nsupdate` is not offered because it needs a TSIG key file
+inside the container, which the module cannot provide. An instance
 still configured with one of them keeps its settings, but the host entry is
-not written: ddclient 4 would silently replace an unknown protocol with
-`dyndns2` and send the credentials to `members.dyndns.org`. The UI shows a
-warning until another protocol is saved.
+not written. For the first two, ddclient 4 would silently replace the
+unknown protocol with `dyndns2` and send the credentials to
+`members.dyndns.org`. The UI shows a warning until another protocol is
+saved.
 
 ## Get the configuration
 You can retrieve the configuration with
@@ -136,10 +139,13 @@ the host entry is written again with the same values.
   login and password fields to the API key fields, when they start with
   `pk1_` and `sk1_`, and clears the `porkbun.com` server, which ddclient 4
   rejects. Otherwise the Settings page asks for the API keys.
-- An instance still on `googledomains`, `dnspark` or `nsupdate` is not
-  updated anymore. Choose another protocol and save.
-- A password with a `#` or a space was cut by ddclient before. It is now
-  passed whole.
+- `googledomains` and `dnspark` were removed from ddclient 4. `nsupdate`
+  still exists in ddclient 4, but it needs a TSIG key file that the module
+  cannot provide. None of them could update the domain name with 1.1.x
+  either. Their settings are kept, the Settings page shows a warning:
+  choose another protocol and save.
+- A password with a space broke the whole host entry before: ddclient read
+  the word after the space as the host name. It is now passed whole.
 - Restoring a backup taken with 1.1.x fails, since the restore reinstalls
   the version saved in the backup and that version sends the IPv6 setting
   with the wrong type. Take a new backup after the update.
