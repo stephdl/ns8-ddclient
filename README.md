@@ -82,8 +82,10 @@ host entry carries only the variables its protocol uses.
 Secrets are stored in `state/password.env`, passed to the container with
 `--env-file`, and referenced in `ddclient.conf` as `password_env=`,
 `apikey_env=`, `secretapikey_env=`. They never appear in the configuration
-file, and any character in them is safe. A `#` in the login is refused:
-ddclient strips it as a comment even inside quotes.
+file, so a password like `pa#ss word` reaches the provider whole. The other
+fields, like the login or the root domain, are written in the file: a `#`
+or a line break in them is refused, since ddclient strips everything after
+`#` as a comment, even inside quotes.
 
 Fields used by each protocol:
 
@@ -144,8 +146,10 @@ the host entry is written again with the same values.
   cannot provide. None of them could update the domain name with 1.1.x
   either. Their settings are kept, the Settings page shows a warning:
   choose another protocol and save.
-- A password with a space broke the whole host entry before: ddclient read
-  the word after the space as the host name. It is now passed whole.
+- A password with a space broke the whole host entry before. With
+  `pa#ss word`, 1.1.x made ddclient update the host `word` with the login
+  set to the real host name. After the update the password is passed whole
+  and the right host is updated, with no action needed.
 - Restoring a backup taken with 1.1.x fails, since the restore reinstalls
   the version saved in the backup and that version sends the IPv6 setting
   with the wrong type. Take a new backup after the update.
