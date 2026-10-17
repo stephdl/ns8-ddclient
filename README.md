@@ -22,12 +22,16 @@ Let's assume that the mattermost instance is named `ddclient1`.
 Launch `configure-module`, by setting the following parameters:
 - `ddclient_host`: a fully qualified domain name for the dynamic hostname
 - `ddclient_ipv6`: enable the ipv6
-- `ddclient_login`: login to the provider
-- `ddclient_password`: password to the provider
-- `ddclient_protocol`: protocol to the provider
-- `ddclient_server`: FQDN to the provider api
+- `ddclient_protocol`: protocol to the provider, one of the keys of `imageroot/etc/protocols.json`
+- `ddclient_server`: FQDN to the provider api. An empty string selects the protocol default
 - `ddclient_daemon`: time renew in second to the provider
+- `ddclient_login`: login to the provider, for the protocols that use it
+- `ddclient_password`: password or token for the provider, for the protocols that use it
+- `ddclient_apikey`, `ddclient_secretapikey`: API keys, for `porkbun`
+- `ddclient_root_domain`: root domain of `ddclient_host`, for `porkbun`. Optional
 
+The last five are optional. An empty or missing secret (`ddclient_password`,
+`ddclient_apikey`, `ddclient_secretapikey`) keeps the stored value.
 
 Example:
 
@@ -45,8 +49,47 @@ api-cli run configure-module --agent module/ddclient1 --data - <<EOF
 EOF
 ```
 
+Porkbun example. Create the API keys first, see
+https://kb.porkbun.com/article/190-getting-started-with-the-porkbun-api,
+and enable API access on the domain:
+
+```
+api-cli run configure-module --agent module/ddclient1 --data - <<EOF
+{
+    "ddclient_daemon": "300",
+    "ddclient_host": "home.example.com",
+    "ddclient_ipv6": false,
+    "ddclient_apikey": "pk1_XXXXXXX",
+    "ddclient_secretapikey": "sk1_XXXXXXX",
+    "ddclient_root_domain": "example.com",
+    "ddclient_protocol": "porkbun",
+    "ddclient_server": ""
+}
+EOF
+```
+
 The above command will:
 - start and configure the ddclient instance
+
+## Protocols
+
+The module runs ddclient 4.0.0. `imageroot/etc/protocols.json` lists the
+protocols the module can configure, with the default server and the
+variables of each one, as declared in the `%protocols` table of
+`ddclient.in`. Both the UI and `bin/write-ddclient-conf` read it, so a
+host entry carries only the variables its protocol uses.
+
+Secrets are stored in `state/password.env`, passed to the container with
+`--env-file`, and referenced in `ddclient.conf` as `password_env=`,
+`apikey_env=`, `secretapikey_env=`. They never appear in the configuration
+file, and any character in them is safe. A `#` in the login is refused:
+ddclient strips it as a comment even inside quotes.
+
+`googledomains`, `dnspark` and `nsupdate` are no longer offered. An instance
+still configured with one of them keeps its settings, but the host entry is
+not written: ddclient 4 would silently replace an unknown protocol with
+`dyndns2` and send the credentials to `members.dyndns.org`. The UI shows a
+warning until another protocol is saved.
 
 ## Get the configuration
 You can retrieve the configuration with
