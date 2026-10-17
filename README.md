@@ -197,6 +197,13 @@ podman exec -ti   ddclient-app sh
 / # 
 ```
 
+- ddclient messages go to the journal under the instance name, like the
+  rest of the module. Each update attempt logs a `SUCCESS` or `FAILED` line:
+
+```
+journalctl -t ddclient1 | grep -E "SUCCESS|FAILED"
+```
+
 - the generated configuration is `config/ddclient.conf` in the state
   directory. If the host entry is missing, the journal says why:
 
