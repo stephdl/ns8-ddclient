@@ -10,6 +10,10 @@ ${TEST_LOGIN}       ns8-ci
 ${TEST_PASSWORD}    Nethesis,1234
 ${TEST_PROTOCOL}    dyndns2
 ${TEST_DAEMON}      300
+${PB_HOST}          home.ns8-ci.test
+${PB_ROOT}          ns8-ci.test
+${PB_APIKEY}        pk1_ns8ci
+${PB_SECRET}        sk1_ns8#ci
 
 *** Keywords ***
 Login to cluster-admin
@@ -77,6 +81,46 @@ Check if the password stays out of the environment
     Should Be Equal As Integers    ${rc}  0
     Should Not Contain    ${output}    ${TEST_PASSWORD}
     Should Contain    ${output}    DDCLIENT_LOGIN=${TEST_LOGIN}
+
+Check if every secret key is written
+    # configure-module writes all keys, even empty, so the file has the same
+    # shape whatever the protocol
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cut -d= -f1 $AGENT_STATE_DIR/password.env'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal    ${output}    DDCLIENT_APIKEY\nDDCLIENT_PASSWORD\nDDCLIENT_SECRETAPIKEY
+
+Check if a porkbun entry is rendered
+    # Run the renderer alone in a scratch directory: a configure-module call
+    # would restart ddclient, which would then call the porkbun API
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cd $(mktemp -d) && printf "DDCLIENT_APIKEY=${PB_APIKEY}\\nDDCLIENT_SECRETAPIKEY=${PB_SECRET}\\n" > password.env && DDCLIENT_PROTOCOL=porkbun DDCLIENT_SERVER= DDCLIENT_HOST=${PB_HOST} DDCLIENT_ROOT_DOMAIN=${PB_ROOT} DDCLIENT_LOGIN=${TEST_LOGIN} write-ddclient-conf && cat config/ddclient.conf && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    protocol=porkbun, \\\n
+    # An empty server falls back to the protocol default
+    Should Contain    ${output}    server=api.porkbun.com, \\\n
+    Should Contain    ${output}    apikey_env=DDCLIENT_APIKEY, \\\n
+    Should Contain    ${output}    secretapikey_env=DDCLIENT_SECRETAPIKEY, \\\n
+    Should Contain    ${output}    root-domain=${PB_ROOT}, \\\n
+    Should End With    ${output}    \n${PB_HOST}
+    # porkbun declares no login or password, and the keys stay in the
+    # container environment
+    Should Not Contain    ${output}    login=
+    Should Not Contain    ${output}    password
+    Should Not Contain    ${output}    ${PB_APIKEY}
+    Should Not Contain    ${output}    ${PB_SECRET}
+
+Check if a protocol removed from ddclient 4 gets no entry
+    # ddclient 4 would replace it with dyndns2 and send the credentials to
+    # members.dyndns.org
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cd $(mktemp -d) && DDCLIENT_PROTOCOL=googledomains DDCLIENT_HOST=${PB_HOST} write-ddclient-conf && cat config/ddclient.conf && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Not Contain    ${output}    ${PB_HOST}
+    Should Not Contain    ${output}    protocol=
 
 Check if the services are running
     ${output}  ${rc} =    Execute Command
