@@ -98,8 +98,16 @@ Fields used by each protocol:
 | `porkbun` | `api.porkbun.com` | apikey, secretapikey, root-domain (optional) |
 | `zoneedit1` | `dynamic.zoneedit.com` | login, password |
 
-If a required field is empty, the host entry is not written and the reason
-is logged in the module journal.
+`configure-module` refuses a new protocol whose required fields are empty.
+If the stored setup is still incomplete, for example after an update, the
+host entry is not written, the reason is logged in the module journal and
+the Settings page shows it.
+
+Secrets belong to the protocol they were given for: switching protocol
+clears them. With the same protocol, an empty secret keeps the stored one.
+
+For `porkbun`, when the host has a single dot, like `example.com`, and no
+root domain is given, the host itself is used as root domain.
 
 `googledomains`, `dnspark` and `nsupdate` are no longer offered. An instance
 still configured with one of them keeps its settings, but the host entry is
@@ -124,8 +132,10 @@ lists the secrets that have a stored value, for example
 The update needs no action for protocols that use a login and a password:
 the host entry is written again with the same values.
 
-- `porkbun` could not work before. After the update its host entry is not
-  written until the API key and the secret API key are saved.
+- `porkbun` could not work before. The update moves keys typed in the old
+  login and password fields to the API key fields, when they start with
+  `pk1_` and `sk1_`, and clears the `porkbun.com` server, which ddclient 4
+  rejects. Otherwise the Settings page asks for the API keys.
 - An instance still on `googledomains`, `dnspark` or `nsupdate` is not
   updated anymore. Choose another protocol and save.
 - A password with a `#` or a space was cut by ddclient before. It is now
@@ -208,7 +218,7 @@ journalctl -t ddclient1 | grep -E "SUCCESS|FAILED"
   directory. If the host entry is missing, the journal says why:
 
 ```
-journalctl -t ddclient1 | grep -E "is required|not supported"
+journalctl -t ddclient1 | grep -E "is required|not supported|cannot contain"
 ```
 
 - to see what ddclient sends to the provider, run one update pass by hand

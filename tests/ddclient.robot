@@ -154,6 +154,44 @@ Check if the services are running
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
 
+Check if a porkbun setup from 1.1.x is repaired on update
+    # The 1.1.x UI had only login and password: the community report put the
+    # public key in login, the secret key in password, and porkbun.com as
+    # server. Replay the update hook on that state in a scratch directory
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'export AGENT_STATE_DIR=$(mktemp -d) && cd $AGENT_STATE_DIR && printf "DDCLIENT_PASSWORD=${PB_SECRET}\\n" > password.env && export DDCLIENT_PROTOCOL=porkbun DDCLIENT_SERVER=porkbun.com DDCLIENT_HOST=${PB_HOST} DDCLIENT_LOGIN=${PB_APIKEY} && $AGENT_INSTALL_DIR/update-module.d/10porkbun_keys && set -a && . ./environment && write-ddclient-conf && cat config/ddclient.conf password.env && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    server=api.porkbun.com, \\\n
+    Should Contain    ${output}    apikey_env=DDCLIENT_APIKEY, \\\n
+    Should Contain    ${output}    secretapikey_env=DDCLIENT_SECRETAPIKEY, \\\n
+    Should Contain    ${output}    DDCLIENT_APIKEY=${PB_APIKEY}\n
+    Should Contain    ${output}    DDCLIENT_SECRETAPIKEY=${PB_SECRET}\n
+
+Check if porkbun on a bare domain sets the root domain
+    # Without root-domain, ddclient would split example.com into the record
+    # "example" of the zone "com"
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cd $(mktemp -d) && printf "DDCLIENT_APIKEY=${PB_APIKEY}\\nDDCLIENT_SECRETAPIKEY=${PB_SECRET}\\n" > password.env && DDCLIENT_PROTOCOL=porkbun DDCLIENT_SERVER= DDCLIENT_HOST=${PB_ROOT} write-ddclient-conf && cat config/ddclient.conf && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    root-domain=${PB_ROOT}, \\\n
+
+Check if porkbun without its keys is refused
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TEST_PASSWORD}","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  10
+    Should Contain    ${output}    entry_required
+
+Check if a protocol switch does not reuse the stored password
+    # The dyndns2 password is stored: duckdns must get its own token
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"ns8ci.duckdns.org","ddclient_server":"","ddclient_protocol":"duckdns","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  10
+    Should Contain    ${output}    entry_required
+
 Check if an incomplete configuration is refused
     # The agent exits 10 on a JSON Schema input validation failure, and this
     # action requires seven fields
