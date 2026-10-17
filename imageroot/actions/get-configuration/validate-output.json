@@ -137,7 +137,8 @@
               "enum": [
                 "unsupported_protocol",
                 "required",
-                "invalid"
+                "invalid",
+                "root_domain"
               ]
             },
             "field": {

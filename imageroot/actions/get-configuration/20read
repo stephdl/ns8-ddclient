@@ -35,7 +35,7 @@ config["ddclient_secretapikey"] = ""
 
 # Secrets are never sent back: the UI only needs to know which ones are set
 secrets = dp.read_secrets()
-config["ddclient_stored_secrets"] = [name for name in ["password", "apikey", "secretapikey"] if secrets.get("DDCLIENT_" + name.upper())]
+config["ddclient_stored_secrets"] = [name for name in dp.SECRET_NAMES if secrets.get(dp.env_name(name))]
 
 # Same check as bin/write-ddclient-conf, so the UI can say why the host is
 # not updated, for example after an update from a version that accepted it
@@ -43,7 +43,7 @@ protocol = config["ddclient_protocol"]
 host = config["ddclient_host"]
 config["ddclient_entry_error"] = None
 if host:
-    values = dp.entry_values(protocol, host, os.environ, secrets) if protocol in dp.load() else {}
+    values = dp.entry_values(protocol, host, os.environ, secrets)
     config["ddclient_entry_error"] = dp.entry_error(protocol, host, values)
 
 

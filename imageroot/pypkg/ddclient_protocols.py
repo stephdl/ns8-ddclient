@@ -9,6 +9,7 @@
 # what makes a host entry complete.
 #
 
+import functools
 import json
 import os
 
@@ -16,9 +17,11 @@ import agent
 
 DESCRIPTOR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "etc", "protocols.json")
 SECRETS_FILE = "password.env"
-SECRET_KEYS = ["DDCLIENT_PASSWORD", "DDCLIENT_APIKEY", "DDCLIENT_SECRETAPIKEY"]
+SECRET_NAMES = ["password", "apikey", "secretapikey"]
+SECRET_KEYS = ["DDCLIENT_" + name.upper() for name in SECRET_NAMES]
 
 
+@functools.lru_cache(maxsize=None)
 def load():
     with open(DESCRIPTOR) as fp:
         return json.load(fp)["protocols"]
@@ -41,6 +44,8 @@ def entry_values(protocol, host, environ, secrets):
     """Return the values of the protocol variables, filling the defaults
     that ddclient would otherwise get wrong."""
     values = {}
+    if protocol not in load():
+        return values
     for var in load()[protocol]["vars"]:
         source = secrets if var["secret"] else environ
         values[var["name"]] = source.get(env_name(var["name"]), "")
@@ -53,7 +58,8 @@ def entry_values(protocol, host, environ, secrets):
 
 def entry_error(protocol, host, values):
     """Return None if the host entry can be written, otherwise a dict
-    {"error": "unsupported_protocol" | "required" | "invalid", "field": name}."""
+    {"error": "unsupported_protocol" | "required" | "invalid" |
+    "root_domain", "field": name}."""
     protocols = load()
     if protocol not in protocols:
         return {"error": "unsupported_protocol", "field": protocol}
@@ -65,4 +71,8 @@ def entry_error(protocol, host, values):
         # quotes. Secrets are safe: they are passed through the environment
         if not var["secret"] and ("#" in value or "\n" in value):
             return {"error": "invalid", "field": var["name"]}
+    # ddclient fails on every cycle when the host is outside the zone
+    root = values.get("root-domain", "").lower()
+    if root and not (host.lower() == root or host.lower().endswith("." + root)):
+        return {"error": "root_domain", "field": "root-domain"}
     return None

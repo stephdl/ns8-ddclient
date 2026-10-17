@@ -66,7 +66,7 @@
     "ddclient_apikey": "API key",
     "ddclient_secretapikey": "Secret API key",
     "ddclient_root_domain": "Root domain",
-    "ddclient_root_domain_helper": "Domain registered at the provider, like example.com. Leave empty to split the dynamic domain name at the first dot",
+    "ddclient_root_domain_helper": "Domain registered at the provider, like example.com. Fill it when the dynamic domain name has several subdomain levels, like a.home.example.com. Empty: the name is split at the first dot",
     "secret_placeholder_leave_empty_for_unchanged": "Leave empty to keep the stored value",
     "unsupported_protocol_title": "Protocol no longer supported",
     "unsupported_protocol_description": "The configured protocol {protocol} is not supported by ddclient 4. The domain name is not updated anymore. Choose another protocol and save.",
@@ -75,7 +75,9 @@
     "entry_invalid_description": "The field {field} contains a '#' or a line break, which ddclient cannot read. Change it and save.",
     "entry_required": "Required",
     "entry_invalid": "A '#' or a line break is not accepted",
-    "entry_unsupported_protocol": "Choose a protocol supported by ddclient 4"
+    "entry_unsupported_protocol": "Choose a protocol supported by ddclient 4",
+    "entry_root_domain": "The dynamic domain name must end with the root domain",
+    "entry_root_domain_description": "The dynamic domain name does not end with the root domain. Change one of them and save."
   },
   "about": {
     "title": "About"

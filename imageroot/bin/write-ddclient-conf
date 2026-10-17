@@ -31,7 +31,7 @@ def host_entry():
     host = os.getenv("DDCLIENT_HOST", "")
     if not host:
         return []
-    values = dp.entry_values(protocol, host, os.environ, dp.read_secrets()) if protocol in dp.load() else {}
+    values = dp.entry_values(protocol, host, os.environ, dp.read_secrets())
     error = dp.entry_error(protocol, host, values)
     if error:
         # Not a failure of the unit: a non-zero exit here would also fail
@@ -40,6 +40,7 @@ def host_entry():
             "unsupported_protocol": f"protocol '{protocol}' is not supported by ddclient 4.0.0",
             "required": f"'{error['field']}' is required by protocol {protocol}",
             "invalid": f"'{error['field']}' cannot contain '#' or a newline",
+            "root_domain": f"'{host}' does not end with the root domain",
         }[error["error"]]
         print(f"{reason}: {host} is not updated", file=sys.stderr)
         return []
@@ -61,7 +62,7 @@ def host_entry():
 
 def main():
     lines = [
-        "daemon=" + os.getenv("DDCLIENT_DAEMON", "300"),
+        "daemon=" + (os.getenv("DDCLIENT_DAEMON") or "300"),
         "pid=/var/run/ddclient/ddclient.pid",
         "ssl=yes",
         "usev4=webv4, webv4=api.ipify.org",

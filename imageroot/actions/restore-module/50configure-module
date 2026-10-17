@@ -8,19 +8,19 @@
 import sys
 import json
 import agent
+import ddclient_protocols as dp
 import os
 
 request = json.load(sys.stdin)
 renv = request['environment']
-# Backups taken before the API keys existed have a partial password.env
-secrets = agent.read_envfile("password.env") if os.path.exists("password.env") else {}
+secrets = dp.read_secrets()
 
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "ddclient_host": renv["DDCLIENT_HOST"],
     "ddclient_login": renv.get("DDCLIENT_LOGIN", ""),
-    "ddclient_password": secrets.get("DDCLIENT_PASSWORD", ""),
-    "ddclient_apikey": secrets.get("DDCLIENT_APIKEY", ""),
-    "ddclient_secretapikey": secrets.get("DDCLIENT_SECRETAPIKEY", ""),
+    "ddclient_password": secrets["DDCLIENT_PASSWORD"],
+    "ddclient_apikey": secrets["DDCLIENT_APIKEY"],
+    "ddclient_secretapikey": secrets["DDCLIENT_SECRETAPIKEY"],
     "ddclient_protocol": renv["DDCLIENT_PROTOCOL"],
     "ddclient_server": renv["DDCLIENT_SERVER"],
     "ddclient_root_domain": renv.get("DDCLIENT_ROOT_DOMAIN", ""),

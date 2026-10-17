@@ -28,19 +28,21 @@ for key in dp.SECRET_KEYS:
     if value != "":
         secrets[key] = value
 
-# Only a protocol change is checked: restore and clone configure again the
-# stored protocol, which may be one ddclient 4 dropped
-if protocol_changed:
-    environ = {
-        "DDCLIENT_LOGIN": data.get("ddclient_login", ""),
-        "DDCLIENT_ROOT_DOMAIN": data.get("ddclient_root_domain", ""),
-    }
-    error = None
-    if protocol in dp.load():
-        values = dp.entry_values(protocol, data["ddclient_host"], environ, secrets)
-        error = dp.entry_error(protocol, data["ddclient_host"], values)
-    else:
-        error = {"error": "unsupported_protocol", "field": protocol}
+# Refuse only an error this request brings in. Restore and clone send the
+# stored setup again, which may already be incomplete or use a protocol
+# ddclient 4 dropped: get-configuration reports it instead
+environ = {
+    "DDCLIENT_LOGIN": data.get("ddclient_login", ""),
+    "DDCLIENT_ROOT_DOMAIN": data.get("ddclient_root_domain", ""),
+}
+host = data["ddclient_host"]
+error = dp.entry_error(protocol, host, dp.entry_values(protocol, host, environ, secrets))
+if error:
+    stored_protocol = os.getenv("DDCLIENT_PROTOCOL", "")
+    stored_host = os.getenv("DDCLIENT_HOST", "")
+    stored_values = dp.entry_values(stored_protocol, stored_host, os.environ, dp.read_secrets())
+    if error == dp.entry_error(stored_protocol, stored_host, stored_values):
+        error = None
     if error:
         field = "ddclient_protocol" if error["error"] == "unsupported_protocol" else "ddclient_" + error["field"].replace("-", "_")
         agent.set_status('validation-failed')
