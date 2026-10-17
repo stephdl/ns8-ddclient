@@ -159,14 +159,14 @@ Check if a porkbun setup from 1.1.x is repaired on update
     # public key in login, the secret key in password, and porkbun.com as
     # server. Replay the update hook on that state in a scratch directory
     ${output}  ${rc} =    Execute Command
-    ...    runagent -m ${module_id} bash -c 'export AGENT_STATE_DIR=$(mktemp -d) && cd $AGENT_STATE_DIR && printf "DDCLIENT_PASSWORD=${PB_SECRET}\\n" > password.env && export DDCLIENT_PROTOCOL=porkbun DDCLIENT_SERVER=porkbun.com DDCLIENT_HOST=${PB_HOST} DDCLIENT_LOGIN=${PB_APIKEY} && $AGENT_INSTALL_DIR/update-module.d/10porkbun_keys && set -a && . ./environment && write-ddclient-conf && cat config/ddclient.conf password.env && rm -rf "$PWD"'
+    ...    runagent -m ${module_id} bash -c 'export AGENT_STATE_DIR=$(mktemp -d) && cd $AGENT_STATE_DIR && printf "DDCLIENT_PASSWORD=${PB_SECRET}\\n" > password.env && printf "DDCLIENT_PROTOCOL=porkbun\\nDDCLIENT_SERVER=porkbun.com\\nDDCLIENT_HOST=${PB_HOST}\\nDDCLIENT_LOGIN=${PB_APIKEY}\\n" > environment && set -a && . ./environment && set +a && $AGENT_INSTALL_DIR/update-module.d/10porkbun_keys && set -a && . ./environment && set +a && write-ddclient-conf && cat config/ddclient.conf password.env && rm -rf "$PWD"'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    server=api.porkbun.com, \\\n
     Should Contain    ${output}    apikey_env=DDCLIENT_APIKEY, \\\n
     Should Contain    ${output}    secretapikey_env=DDCLIENT_SECRETAPIKEY, \\\n
-    Should Contain    ${output}    DDCLIENT_APIKEY=${PB_APIKEY}\n
-    Should Contain    ${output}    DDCLIENT_SECRETAPIKEY=${PB_SECRET}\n
+    Should Contain    ${output}    DDCLIENT_APIKEY=${PB_APIKEY}\nDDCLIENT_PASSWORD=
+    Should End With    ${output}    DDCLIENT_SECRETAPIKEY=${PB_SECRET}
 
 Check if porkbun on a bare domain sets the root domain
     # Without root-domain, ddclient would split example.com into the record
@@ -181,7 +181,8 @@ Check if porkbun without its keys is refused
     ${output}  ${rc} =    Execute Command
     ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TEST_PASSWORD}","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
     ...    return_rc=True
-    Should Be Equal As Integers    ${rc}  10
+    # Refused by the action step, not the schema: exit 3, not 10
+    Should Be Equal As Integers    ${rc}  3
     Should Contain    ${output}    entry_required
 
 Check if a protocol switch does not reuse the stored password
@@ -189,7 +190,8 @@ Check if a protocol switch does not reuse the stored password
     ${output}  ${rc} =    Execute Command
     ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"ns8ci.duckdns.org","ddclient_server":"","ddclient_protocol":"duckdns","ddclient_daemon":"300","ddclient_ipv6":false}'
     ...    return_rc=True
-    Should Be Equal As Integers    ${rc}  10
+    # Refused by the action step, not the schema: exit 3, not 10
+    Should Be Equal As Integers    ${rc}  3
     Should Contain    ${output}    entry_required
 
 Check if an incomplete configuration is refused
