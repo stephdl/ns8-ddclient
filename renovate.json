@@ -6,9 +6,10 @@
   "regexManagers": [
     {
       "fileMatch": ["build-images.sh"],
-      "matchStrings": ["docker\\.io/linuxserver/ddclient:v(?<currentValue>[0-9\\.]+-ls[0-9]+)"],
+      "matchStrings": ["docker\\.io/linuxserver/ddclient:(?<currentValue>v[0-9.]+-ls[0-9]+)"],
       "datasourceTemplate": "docker",
-      "depNameTemplate": "linuxserver/ddclient"
+      "depNameTemplate": "linuxserver/ddclient",
+      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-ls(?<build>\\d+)$"
     }
   ]
 }
