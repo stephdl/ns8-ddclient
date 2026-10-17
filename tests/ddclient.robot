@@ -165,7 +165,8 @@ Check if a porkbun setup from 1.1.x is repaired on update
     Should Contain    ${output}    server=api.porkbun.com, \\\n
     Should Contain    ${output}    apikey_env=DDCLIENT_APIKEY, \\\n
     Should Contain    ${output}    secretapikey_env=DDCLIENT_SECRETAPIKEY, \\\n
-    Should Contain    ${output}    DDCLIENT_APIKEY=${PB_APIKEY}\nDDCLIENT_PASSWORD=
+    # The secret key moved out of the password field, which is cleared
+    Should Contain    ${output}    DDCLIENT_APIKEY=${PB_APIKEY}\nDDCLIENT_PASSWORD=\nDDCLIENT_SECRETAPIKEY=
     Should End With    ${output}    DDCLIENT_SECRETAPIKEY=${PB_SECRET}
 
 Check if porkbun on a bare domain sets the root domain
@@ -191,6 +192,21 @@ Check if a protocol switch does not reuse the stored password
     ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"ns8ci.duckdns.org","ddclient_server":"","ddclient_protocol":"duckdns","ddclient_daemon":"300","ddclient_ipv6":false}'
     ...    return_rc=True
     # Refused by the action step, not the schema: exit 3, not 10
+    Should Be Equal As Integers    ${rc}  3
+    Should Contain    ${output}    entry_required
+
+Check if a root domain outside the host is refused
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"","ddclient_apikey":"${PB_APIKEY}","ddclient_secretapikey":"${PB_SECRET}","ddclient_root_domain":"example.org","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  3
+    Should Contain    ${output}    entry_root_domain
+
+Check if clearing a required field is refused
+    # Same protocol as stored: the check must not depend on a switch
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${TEST_HOST}","ddclient_server":"${TEST_SERVER}","ddclient_login":"","ddclient_protocol":"${TEST_PROTOCOL}","ddclient_daemon":"${TEST_DAEMON}","ddclient_ipv6":false}'
+    ...    return_rc=True
     Should Be Equal As Integers    ${rc}  3
     Should Contain    ${output}    entry_required
 
