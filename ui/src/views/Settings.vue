@@ -42,6 +42,16 @@
         />
       </cv-column>
     </cv-row>
+    <cv-row v-if="entryErrorMessage">
+      <cv-column>
+        <NsInlineNotification
+          kind="warning"
+          :title="$t('settings.entry_not_written_title')"
+          :description="entryErrorMessage"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
     <cv-row v-if="isProtocolUnsupported">
       <cv-column>
         <NsInlineNotification
@@ -84,6 +94,7 @@
               :invalid-message="$t(error.ddclient_protocol)"
               :label="$t('settings.ddclient_protocol')"
               :placeholder="$t('settings.ddclient_protocol_placeholder')"
+              ref="ddclient_protocol"
               :disabled="loading.getConfiguration || loading.configureModule"
             >
               <cv-dropdown-item
@@ -286,6 +297,7 @@ export default {
       ddclient_secretapikey: "",
       ddclient_root_domain: "",
       ddclient_stored_secrets: [],
+      ddclient_entry_error: null,
       configuredProtocol: "",
       protocols: descriptor.protocols,
       ipv4_address: "",
@@ -325,6 +337,21 @@ export default {
     defaultServer() {
       const protocol = this.protocols[this.ddclient_protocol];
       return protocol ? protocol.server : "";
+    },
+    // Secrets are stored for one protocol: after a switch they are cleared
+    storedSecrets() {
+      return this.ddclient_protocol === this.configuredProtocol
+        ? this.ddclient_stored_secrets
+        : [];
+    },
+    entryErrorMessage() {
+      const e = this.ddclient_entry_error;
+      if (!e || e.error === "unsupported_protocol") {
+        return "";
+      }
+      return this.$t("settings.entry_" + e.error + "_description", {
+        field: e.field,
+      });
     },
     isProtocolUnsupported() {
       return (
@@ -367,8 +394,14 @@ export default {
     usesVar(varName) {
       return this.protocolVars.some((v) => v.name === varName);
     },
+    focusProtocol() {
+      // cv-dropdown has no focus() method for focusElement to call
+      this.$nextTick(() => {
+        this.$refs.ddclient_protocol.$el.querySelector("button").focus();
+      });
+    },
     secretPlaceholder(varName) {
-      return this.ddclient_stored_secrets.includes(varName)
+      return this.storedSecrets.includes(varName)
         ? this.$t("settings.secret_placeholder_leave_empty_for_unchanged")
         : "";
     },
@@ -425,6 +458,7 @@ export default {
       this.ddclient_secretapikey = config.ddclient_secretapikey;
       this.ddclient_root_domain = config.ddclient_root_domain;
       this.ddclient_stored_secrets = config.ddclient_stored_secrets;
+      this.ddclient_entry_error = config.ddclient_entry_error;
       this.configuredProtocol = config.ddclient_protocol;
       this.ipv4_address = config.ipv4_address;
       this.ipv6_address = config.ipv6_address;
@@ -449,12 +483,15 @@ export default {
       // cv-dropdown keeps a value it has no item for, and would send it back
       if (!this.protocols[this.ddclient_protocol]) {
         this.error.ddclient_protocol = "settings.ddclient_protocol_required";
+
+        if (isValidationOk) {
+          this.focusProtocol();
+        }
         isValidationOk = false;
       }
       for (const v of this.protocolVars) {
         const field = this.fieldName(v.name);
-        const isStored =
-          v.secret && this.ddclient_stored_secrets.includes(v.name);
+        const isStored = v.secret && this.storedSecrets.includes(v.name);
         if (v.required && !this[field] && !isStored) {
           this.error[field] = "common.required";
 
@@ -473,10 +510,14 @@ export default {
       for (const validationError of validationErrors) {
         const param = validationError.parameter;
         // set i18n error message
-        this.error[param] = this.$t("settings." + validationError.error);
+        this.error[param] = "settings." + validationError.error;
 
         if (!focusAlreadySet) {
-          this.focusElement(param);
+          if (param === "ddclient_protocol") {
+            this.focusProtocol();
+          } else {
+            this.focusElement(param);
+          }
           focusAlreadySet = true;
         }
       }

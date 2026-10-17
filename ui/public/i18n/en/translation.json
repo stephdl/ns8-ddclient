@@ -69,7 +69,13 @@
     "ddclient_root_domain_helper": "Domain registered at the provider, like example.com. Leave empty to split the dynamic domain name at the first dot",
     "secret_placeholder_leave_empty_for_unchanged": "Leave empty to keep the stored value",
     "unsupported_protocol_title": "Protocol no longer supported",
-    "unsupported_protocol_description": "The configured protocol {protocol} is not supported by ddclient 4. The domain name is not updated anymore. Choose another protocol and save."
+    "unsupported_protocol_description": "The configured protocol {protocol} is not supported by ddclient 4. The domain name is not updated anymore. Choose another protocol and save.",
+    "entry_not_written_title": "Domain name not updated",
+    "entry_required_description": "The field {field} is empty. Fill it and save.",
+    "entry_invalid_description": "The field {field} contains a '#' or a line break, which ddclient cannot read. Change it and save.",
+    "entry_required": "Required",
+    "entry_invalid": "A '#' or a line break is not accepted",
+    "entry_unsupported_protocol": "Choose a protocol supported by ddclient 4"
   },
   "about": {
     "title": "About"
