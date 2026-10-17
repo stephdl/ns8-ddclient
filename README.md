@@ -8,16 +8,16 @@ This is especially useful for home users or small businesses using dynamic IP ad
 
 Instantiate the module with:
 
-    add-module ghcr.io/nethserver/ddclient:latest 1
+    add-module ghcr.io/stephdl/ddclient:latest 1
 
 The output of the command will return the instance name.
 Output example:
 
-    {"module_id": "ddclient1", "image_name": "ddclient", "image_url": "ghcr.io/nethserver/ddclient:latest"}
+    {"module_id": "ddclient1", "image_name": "ddclient", "image_url": "ghcr.io/stephdl/ddclient:latest"}
 
 ## Configure
 
-Let's assume that the mattermost instance is named `ddclient1`.
+Let's assume that the ddclient instance is named `ddclient1`.
 
 Launch `configure-module`, by setting the following parameters:
 - `ddclient_host`: a fully qualified domain name for the dynamic hostname
@@ -85,6 +85,22 @@ Secrets are stored in `state/password.env`, passed to the container with
 file, and any character in them is safe. A `#` in the login is refused:
 ddclient strips it as a comment even inside quotes.
 
+Fields used by each protocol:
+
+| Protocol | Default server | Fields |
+|---|---|---|
+| `changeip` | `nic.changeip.com` | login, password |
+| `dslreports1` | `www.dslreports.com` | login, password |
+| `duckdns` | `www.duckdns.org` | password (the token) |
+| `dyndns1`, `dyndns2` | `members.dyndns.org` | login, password |
+| `easydns` | `api.cp.easydns.com` | login, password |
+| `namecheap` | `dynamicdns.park-your-domain.com` | login, password |
+| `porkbun` | `api.porkbun.com` | apikey, secretapikey, root-domain (optional) |
+| `zoneedit1` | `dynamic.zoneedit.com` | login, password |
+
+If a required field is empty, the host entry is not written and the reason
+is logged in the module journal.
+
 `googledomains`, `dnspark` and `nsupdate` are no longer offered. An instance
 still configured with one of them keeps its settings, but the host entry is
 not written: ddclient 4 would silently replace an unknown protocol with
@@ -97,6 +113,26 @@ You can retrieve the configuration with
 ```
 api-cli run get-configuration --agent module/ddclient1
 ```
+
+Secrets are never sent back: `ddclient_password`, `ddclient_apikey` and
+`ddclient_secretapikey` are always empty strings. `ddclient_stored_secrets`
+lists the secrets that have a stored value, for example
+`["apikey", "secretapikey"]`.
+
+## Update from 1.1.x
+
+The update needs no action for protocols that use a login and a password:
+the host entry is written again with the same values.
+
+- `porkbun` could not work before. After the update its host entry is not
+  written until the API key and the secret API key are saved.
+- An instance still on `googledomains`, `dnspark` or `nsupdate` is not
+  updated anymore. Choose another protocol and save.
+- A password with a `#` or a space was cut by ddclient before. It is now
+  passed whole.
+- Restoring a backup taken with 1.1.x fails, since the restore reinstalls
+  the version saved in the backup and that version sends the IPv6 setting
+  with the wrong type. Take a new backup after the update.
 
 ## Uninstall
 
@@ -160,6 +196,21 @@ you can run a shell inside the container
 podman exec -ti   ddclient-app sh
 / # 
 ```
+
+- the generated configuration is `config/ddclient.conf` in the state
+  directory. If the host entry is missing, the journal says why:
+
+```
+journalctl -t ddclient1 | grep -E "is required|not supported"
+```
+
+- to see what ddclient sends to the provider, run one update pass by hand
+  in the container. `-force` sends an update even if the address did not
+  change, and `-debug` prints the secrets, so do not share the output:
+
+```
+runagent -m ddclient1 podman exec ddclient-app sh -c 'sed /^daemon=/d /config/ddclient.conf > /tmp/t.conf && chmod 600 /tmp/t.conf && ddclient -foreground -force -verbose -debug -file /tmp/t.conf -cache /tmp/t.cache; rm -f /tmp/t.conf /tmp/t.cache'
+```
 ## Testing
 
 The runner lives in `ns8-github-actions`, shared by every module. Install it once:
@@ -169,12 +220,17 @@ The runner lives in `ns8-github-actions`, shared by every module. Install it onc
 
 Then, from this directory:
 
-    run-ns8-tests <NODE_ADDR> ghcr.io/nethserver/ddclient:latest
+    run-ns8-tests <NODE_ADDR> ghcr.io/stephdl/ddclient:latest
 
 Add `RUN_UI_TESTS=true` to also run the cases tagged `ui`, which capture the
 module pages of cluster-admin in `tests/outputs/browser/screenshot/`.
 
 The tests are made using [Robot Framework](https://robotframework.org/)
+
+No test calls a real provider. The cases that run ddclient set the server
+to `ddns.example.invalid`, which never resolves, and check the request
+ddclient builds from the generated configuration: URL, login, password and
+API keys.
 
 ## UI translation
 
