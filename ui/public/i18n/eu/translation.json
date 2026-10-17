@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 minutu",
     "ddclient_daemon_3600s": "1 ordu",
     "enable_ipv6": "Gaitu IPv6 automatikoki eguneratzeko aukera",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "Utzi hutsik pasahitza aldatu gabe uzteko",
-    "ddclient_password_placeholder_write_password_here": "Idatzi pasahitza hemen",
-    "ddclient_documentation": "ddclient dokumentazioa {documentation}"
+    "ddclient_documentation": "ddclient dokumentazioa {documentation}",
+    "provider_fqdn_helper": "Utzi hutsik protokoloaren zerbitzari lehenetsia erabiltzeko",
+    "ddclient_protocol_placeholder": "Aukeratu protokolo bat",
+    "ddclient_protocol_required": "Aukeratu ddclient 4k onartzen duen protokolo bat",
+    "ddclient_apikey": "API gakoa",
+    "ddclient_secretapikey": "API gako sekretua",
+    "ddclient_root_domain": "Erro-domeinua",
+    "ddclient_root_domain_helper": "Hornitzailean erregistratutako domeinua, adibidez example.com. Bete ezazu domeinu-izen dinamikoak azpidomeinu-maila bat baino gehiago dituenean, adibidez a.home.example.com. Hutsik: izena lehen puntuan zatitzen da",
+    "secret_placeholder_leave_empty_for_unchanged": "Utzi hutsik gordetako balioa mantentzeko",
+    "unsupported_protocol_title": "Protokoloa ez da gehiago onartzen",
+    "unsupported_protocol_description": "Konfiguratutako {protocol} protokoloa ez du ddclient 4k onartzen. Domeinu-izena ez da gehiago eguneratzen. Aukeratu beste protokolo bat eta gorde.",
+    "entry_not_written_title": "Domeinu-izena ez da eguneratu",
+    "entry_required_description": "{field} eremua hutsik dago. Bete eta gorde.",
+    "entry_invalid_description": "{field} eremuak '#' bat edo lerro-jauzi bat du, eta ddclient-ek ezin du irakurri. Aldatu eta gorde.",
+    "entry_required": "Derrigorrezkoa",
+    "entry_invalid": "Ez da onartzen '#' edo lerro-jauzirik",
+    "entry_unsupported_protocol": "Aukeratu ddclient 4k onartzen duen protokolo bat",
+    "entry_root_domain": "Domeinu-izen dinamikoak erro-domeinuarekin amaitu behar du",
+    "entry_root_domain_description": "Domeinu-izen dinamikoa ez da erro-domeinuarekin amaitzen. Aldatu bietako bat eta gorde."
   },
   "about": {
     "title": "Ezagun"

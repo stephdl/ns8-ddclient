@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 minutes",
     "ddclient_daemon_3600s": "1 heure",
     "enable_ipv6": "Activer la mise à jour automatique IPv6",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "Laisser vide si le mot de passe n'est pas modifié",
-    "ddclient_password_placeholder_write_password_here": "Écrire le mot de passe ici",
-    "ddclient_documentation": "Documentation ddclient {documentation}"
+    "ddclient_documentation": "Documentation ddclient {documentation}",
+    "provider_fqdn_helper": "Laisser vide pour utiliser le serveur par défaut du protocole",
+    "ddclient_protocol_placeholder": "Choisir un protocole",
+    "ddclient_protocol_required": "Choisir un protocole pris en charge par ddclient 4",
+    "ddclient_apikey": "Clé API",
+    "ddclient_secretapikey": "Clé API secrète",
+    "ddclient_root_domain": "Domaine racine",
+    "ddclient_root_domain_helper": "Domaine enregistré chez le fournisseur, par exemple example.com. À remplir quand le nom de domaine dynamique a plusieurs niveaux de sous-domaine, par exemple a.home.example.com. Vide : le nom est coupé au premier point",
+    "secret_placeholder_leave_empty_for_unchanged": "Laisser vide pour garder la valeur enregistrée",
+    "unsupported_protocol_title": "Protocole plus pris en charge",
+    "unsupported_protocol_description": "Le protocole configuré {protocol} n'est pas pris en charge par ddclient 4. Le nom de domaine n'est plus mis à jour. Choisir un autre protocole et sauvegarder.",
+    "entry_not_written_title": "Nom de domaine non mis à jour",
+    "entry_required_description": "Le champ {field} est vide. Le remplir et sauvegarder.",
+    "entry_invalid_description": "Le champ {field} contient un '#' ou un saut de ligne, que ddclient ne sait pas lire. Le modifier et sauvegarder.",
+    "entry_required": "Obligatoire",
+    "entry_invalid": "Un '#' ou un saut de ligne n'est pas accepté",
+    "entry_unsupported_protocol": "Choisir un protocole pris en charge par ddclient 4",
+    "entry_root_domain": "Le nom de domaine dynamique doit se terminer par le domaine racine",
+    "entry_root_domain_description": "Le nom de domaine dynamique ne se termine pas par le domaine racine. Modifier l'un des deux et sauvegarder."
   },
   "about": {
     "title": "À propos"

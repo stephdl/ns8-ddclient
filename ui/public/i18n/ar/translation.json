@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 دقائق",
     "ddclient_daemon_3600s": "1 ساعة",
     "enable_ipv6": "تمكين تحديث IPv6 التلقائي",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "اترك فارغًا إذا كانت كلمة المرور غير متغيرة",
-    "ddclient_password_placeholder_write_password_here": "اكتب كلمة المرور هنا",
-    "ddclient_documentation": "وثائق ddclient {documentation}"
+    "ddclient_documentation": "وثائق ddclient {documentation}",
+    "provider_fqdn_helper": "اتركه فارغًا لاستخدام الخادم الافتراضي للبروتوكول",
+    "ddclient_protocol_placeholder": "اختر بروتوكولًا",
+    "ddclient_protocol_required": "اختر بروتوكولًا يدعمه ddclient 4",
+    "ddclient_apikey": "مفتاح API",
+    "ddclient_secretapikey": "مفتاح API السري",
+    "ddclient_root_domain": "النطاق الجذر",
+    "ddclient_root_domain_helper": "النطاق المسجل لدى المزود، مثل example.com. املأه عندما يحتوي اسم النطاق الديناميكي على عدة مستويات من النطاقات الفرعية، مثل a.home.example.com. إذا كان فارغًا: يُقسم الاسم عند أول نقطة",
+    "secret_placeholder_leave_empty_for_unchanged": "اتركه فارغًا للاحتفاظ بالقيمة المحفوظة",
+    "unsupported_protocol_title": "البروتوكول لم يعد مدعومًا",
+    "unsupported_protocol_description": "البروتوكول المكوّن {protocol} غير مدعوم في ddclient 4. لم يعد اسم النطاق يُحدَّث. اختر بروتوكولًا آخر واحفظ.",
+    "entry_not_written_title": "لم يتم تحديث اسم النطاق",
+    "entry_required_description": "الحقل {field} فارغ. املأه واحفظ.",
+    "entry_invalid_description": "الحقل {field} يحتوي على '#' أو سطر جديد لا يستطيع ddclient قراءته. عدّله واحفظ.",
+    "entry_required": "مطلوب",
+    "entry_invalid": "لا يُقبل '#' أو سطر جديد",
+    "entry_unsupported_protocol": "اختر بروتوكولًا يدعمه ddclient 4",
+    "entry_root_domain": "يجب أن ينتهي اسم النطاق الديناميكي بالنطاق الجذر",
+    "entry_root_domain_description": "اسم النطاق الديناميكي لا ينتهي بالنطاق الجذر. عدّل أحدهما واحفظ."
   },
   "about": {
     "title": "حول"

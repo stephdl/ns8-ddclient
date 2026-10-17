@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 minutos",
     "ddclient_daemon_3600s": "1 hora",
     "enable_ipv6": "Habilitar atualização automática IPv6",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "Deixe vazio se a senha não for alterada",
-    "ddclient_password_placeholder_write_password_here": "Escreva a senha aqui",
-    "ddclient_documentation": "Documentação do ddclient {documentation}"
+    "ddclient_documentation": "Documentação do ddclient {documentation}",
+    "provider_fqdn_helper": "Deixar vazio para usar o servidor predefinido do protocolo",
+    "ddclient_protocol_placeholder": "Escolher um protocolo",
+    "ddclient_protocol_required": "Escolher um protocolo suportado pelo ddclient 4",
+    "ddclient_apikey": "Chave API",
+    "ddclient_secretapikey": "Chave API secreta",
+    "ddclient_root_domain": "Domínio raiz",
+    "ddclient_root_domain_helper": "Domínio registado no fornecedor, por exemplo example.com. Preencher quando o nome de domínio dinâmico tem vários níveis de subdomínio, por exemplo a.home.example.com. Vazio: o nome é dividido no primeiro ponto",
+    "secret_placeholder_leave_empty_for_unchanged": "Deixar vazio para manter o valor guardado",
+    "unsupported_protocol_title": "Protocolo já não suportado",
+    "unsupported_protocol_description": "O protocolo configurado {protocol} não é suportado pelo ddclient 4. O nome de domínio já não é atualizado. Escolher outro protocolo e guardar.",
+    "entry_not_written_title": "Nome de domínio não atualizado",
+    "entry_required_description": "O campo {field} está vazio. Preenchê-lo e guardar.",
+    "entry_invalid_description": "O campo {field} contém um '#' ou uma quebra de linha, que o ddclient não consegue ler. Alterá-lo e guardar.",
+    "entry_required": "Obrigatório",
+    "entry_invalid": "Um '#' ou uma quebra de linha não é aceite",
+    "entry_unsupported_protocol": "Escolher um protocolo suportado pelo ddclient 4",
+    "entry_root_domain": "O nome de domínio dinâmico deve terminar com o domínio raiz",
+    "entry_root_domain_description": "O nome de domínio dinâmico não termina com o domínio raiz. Alterar um dos dois e guardar."
   },
   "about": {
     "title": "Sobre"

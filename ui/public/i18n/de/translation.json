@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 Minuten",
     "ddclient_daemon_3600s": "1 Stunde",
     "enable_ipv6": "Automatische IPv6-Aktualisierung aktivieren",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "Leer lassen, um das Passwort unverändert zu lassen",
-    "ddclient_password_placeholder_write_password_here": "Schreiben Sie hier das Passwort",
-    "ddclient_documentation": "Die ddclient-Dokumentation {documentation}"
+    "ddclient_documentation": "Die ddclient-Dokumentation {documentation}",
+    "provider_fqdn_helper": "Leer lassen, um den Standardserver des Protokolls zu verwenden",
+    "ddclient_protocol_placeholder": "Protokoll auswählen",
+    "ddclient_protocol_required": "Ein von ddclient 4 unterstütztes Protokoll auswählen",
+    "ddclient_apikey": "API-Schlüssel",
+    "ddclient_secretapikey": "Geheimer API-Schlüssel",
+    "ddclient_root_domain": "Stammdomain",
+    "ddclient_root_domain_helper": "Beim Anbieter registrierte Domain, z. B. example.com. Ausfüllen, wenn der dynamische Domainname mehrere Subdomain-Ebenen hat, z. B. a.home.example.com. Leer: Der Name wird am ersten Punkt getrennt",
+    "secret_placeholder_leave_empty_for_unchanged": "Leer lassen, um den gespeicherten Wert zu behalten",
+    "unsupported_protocol_title": "Protokoll nicht mehr unterstützt",
+    "unsupported_protocol_description": "Das konfigurierte Protokoll {protocol} wird von ddclient 4 nicht unterstützt. Der Domainname wird nicht mehr aktualisiert. Ein anderes Protokoll auswählen und speichern.",
+    "entry_not_written_title": "Domainname nicht aktualisiert",
+    "entry_required_description": "Das Feld {field} ist leer. Ausfüllen und speichern.",
+    "entry_invalid_description": "Das Feld {field} enthält ein '#' oder einen Zeilenumbruch, den ddclient nicht lesen kann. Ändern und speichern.",
+    "entry_required": "Erforderlich",
+    "entry_invalid": "Ein '#' oder ein Zeilenumbruch ist nicht erlaubt",
+    "entry_unsupported_protocol": "Ein von ddclient 4 unterstütztes Protokoll auswählen",
+    "entry_root_domain": "Der dynamische Domainname muss mit der Stammdomain enden",
+    "entry_root_domain_description": "Der dynamische Domainname endet nicht mit der Stammdomain. Einen der beiden Werte ändern und speichern."
   },
   "about": {
     "title": "Über"
