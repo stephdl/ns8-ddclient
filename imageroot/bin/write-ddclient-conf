@@ -88,7 +88,6 @@ def main():
 
     lines = [
         "daemon=" + os.getenv("DDCLIENT_DAEMON", "300"),
-        "syslog=yes",
         "pid=/var/run/ddclient/ddclient.pid",
         "ssl=yes",
         "usev4=webv4, webv4=api.ipify.org",
