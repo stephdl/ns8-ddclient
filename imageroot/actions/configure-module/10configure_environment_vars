@@ -15,11 +15,24 @@ import os
 data = json.load(sys.stdin)
 
 agent.set_env("DDCLIENT_HOST", data["ddclient_host"])
-agent.set_env("DDCLIENT_LOGIN", data["ddclient_login"])
+agent.set_env("DDCLIENT_LOGIN", data.get("ddclient_login", ""))
 agent.set_env("DDCLIENT_PROTOCOL", data["ddclient_protocol"])
 agent.set_env("DDCLIENT_SERVER", data["ddclient_server"])
+agent.set_env("DDCLIENT_ROOT_DOMAIN", data.get("ddclient_root_domain", ""))
 agent.set_env("DDCLIENT_DAEMON", data["ddclient_daemon"])
 agent.set_env("DDCLIENT_IPV6", "webv6" if data["ddclient_ipv6"] else "")
 
-if data["ddclient_password"] !="":
-    agent.write_envfile("password.env", {"DDCLIENT_PASSWORD": data["ddclient_password"]})
+# Every key is written, even empty, so the file has one shape whatever the
+# protocol. An empty or missing secret in the request keeps the stored one.
+secrets = {
+    "DDCLIENT_PASSWORD": "",
+    "DDCLIENT_APIKEY": "",
+    "DDCLIENT_SECRETAPIKEY": "",
+}
+if os.path.exists("password.env"):
+    secrets.update(agent.read_envfile("password.env"))
+for key in ["DDCLIENT_PASSWORD", "DDCLIENT_APIKEY", "DDCLIENT_SECRETAPIKEY"]:
+    value = data.get(key.lower(), "")
+    if value != "":
+        secrets[key] = value
+agent.write_envfile("password.env", secrets)

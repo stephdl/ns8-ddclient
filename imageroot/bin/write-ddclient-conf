@@ -1,39 +1,109 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2024 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-set -e
-set -a
 
-DDCLIENT_SERVER=${DDCLIENT_SERVER}
-DDCLIENT_PROTOCOL=${DDCLIENT_PROTOCOL}
-DDCLIENT_LOGIN=${DDCLIENT_LOGIN}
-DDCLIENT_HOST=${DDCLIENT_HOST}
-DDCLIENT_IPV6=${DDCLIENT_IPV6}
-DDCLIENT_DAEMON=${DDCLIENT_DAEMON}
+#
+# Render config/ddclient.conf from the module environment, password.env and
+# etc/protocols.json. The host entry carries only the variables the selected
+# protocol declares in ddclient 4.0.0.
+#
 
-# read password from file password.env
-while IFS= read -r line; do
-  export "$line"
-done < password.env
+import json
+import os
+import re
+import sys
 
-mkdir -vp config
+DESCRIPTOR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "etc", "protocols.json")
+SAFE_VALUE = re.compile(r"[A-Za-z0-9._:/@+-]+")
 
-# Preprocess the template to remove lines with empty variables
-awk '
-{
-    line = $0
-    while (match(line, /\$\{[^}]+\}/)) {
-        var = substr(line, RSTART + 2, RLENGTH - 3)
-        # Check if the variable is empty
-        if (ENVIRON[var] == "") {
-            # Remove the entire line if the variable is empty
-            next
-        }
-        # Replace the variable with its value
-        line = substr(line, 1, RSTART - 1) ENVIRON[var] substr(line, RSTART + RLENGTH)
-    }
-    print line
-}' ../templates/ddclient.conf.tmpl | envsubst > config/ddclient.conf
+
+def env_name(var):
+    return "DDCLIENT_" + var.upper().replace("-", "_")
+
+
+def read_secrets(path):
+    # A missing or partial file is normal: instances configured before
+    # password.env held the API keys, or never configured at all
+    secrets = {}
+    try:
+        with open(path) as fp:
+            for line in fp:
+                key, sep, value = line.rstrip("\n").partition("=")
+                if sep:
+                    secrets[key] = value
+    except FileNotFoundError:
+        pass
+    return secrets
+
+
+def quote(value):
+    if SAFE_VALUE.fullmatch(value):
+        return value
+    # ddclient strips everything after '#' before parsing the line, even
+    # inside quotes: no escaping can carry it
+    if "#" in value or "\n" in value:
+        raise ValueError("value contains '#' or a newline")
+    return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+
+def host_entry(protocols, secrets):
+    protocol = os.getenv("DDCLIENT_PROTOCOL", "")
+    host = os.getenv("DDCLIENT_HOST", "")
+    if not host:
+        return []
+    if protocol not in protocols:
+        # ddclient 4 replaces an unknown protocol with dyndns2 and would send
+        # the credentials to members.dyndns.org
+        print(f"protocol '{protocol}' is not supported by ddclient 4.0.0: {host} is not updated", file=sys.stderr)
+        return []
+
+    pdef = protocols[protocol]
+    assignments = ["protocol=" + protocol, "server=" + quote(os.getenv("DDCLIENT_SERVER") or pdef["server"])]
+    for var in pdef["vars"]:
+        name = var["name"]
+        if var["secret"]:
+            value = secrets.get(env_name(name), "")
+            # The value stays in the container environment (--env-file), so
+            # no character in it can break the configuration file
+            assignment = f"{name}_env={env_name(name)}"
+        else:
+            value = os.getenv(env_name(name), "")
+            assignment = f"{name}={quote(value)}" if value else ""
+        if not value:
+            if var["required"]:
+                print(f"'{name}' is required by protocol {protocol}: {host} is not updated", file=sys.stderr)
+                return []
+            continue
+        assignments.append(assignment)
+
+    return [a + ", \\" for a in assignments] + [host]
+
+
+def main():
+    with open(DESCRIPTOR) as fp:
+        protocols = json.load(fp)["protocols"]
+
+    lines = [
+        "daemon=" + os.getenv("DDCLIENT_DAEMON", "300"),
+        "syslog=yes",
+        "pid=/var/run/ddclient/ddclient.pid",
+        "ssl=yes",
+        "usev4=webv4, webv4=api.ipify.org",
+    ]
+    if os.getenv("DDCLIENT_IPV6"):
+        lines.append("usev6=webv6, webv6=api6.ipify.org")
+    try:
+        lines += host_entry(protocols, read_secrets("password.env"))
+    except ValueError as ex:
+        print(f"cannot write the host entry: {ex}", file=sys.stderr)
+
+    os.makedirs("config", exist_ok=True)
+    with open("config/ddclient.conf", "w") as fp:
+        fp.write("\n".join(lines) + "\n")
+
+
+if __name__ == "__main__":
+    main()

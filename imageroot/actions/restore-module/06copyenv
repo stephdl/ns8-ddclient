@@ -18,7 +18,9 @@ for evar in [
         "DDCLIENT_LOGIN",
         "DDCLIENT_PROTOCOL",
         "DDCLIENT_SERVER",
+        "DDCLIENT_ROOT_DOMAIN",
         "DDCLIENT_DAEMON",
         "DDCLIENT_IPV6"
     ]:
-    agent.set_env(evar, original_environment[evar])
+    # Backups taken before a variable existed do not carry it
+    agent.set_env(evar, original_environment.get(evar, ""))

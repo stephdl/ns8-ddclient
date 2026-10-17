@@ -8,8 +8,16 @@
       "ddclient_host": "ddclient.domain.org",
       "ddclient_server": "ddclient.domain.org",
       "ddclient_login": "admin",
-      "ddclient_password": "admin",
-      "ddclient_protocol": "http"
+      "ddclient_password": "",
+      "ddclient_protocol": "dyndns2",
+      "ddclient_daemon": "300",
+      "ddclient_ipv6": false,
+      "ddclient_apikey": "",
+      "ddclient_secretapikey": "",
+      "ddclient_root_domain": "",
+      "ddclient_stored_secrets": [
+        "password"
+      ]
     }
   ],
   "type": "object",
@@ -20,7 +28,11 @@
     "ddclient_password",
     "ddclient_protocol",
     "ddclient_daemon",
-    "ddclient_ipv6"
+    "ddclient_ipv6",
+    "ddclient_apikey",
+    "ddclient_secretapikey",
+    "ddclient_root_domain",
+    "ddclient_stored_secrets"
   ],
   "properties": {
     "ddclient_daemon": {
@@ -46,8 +58,7 @@
       ]
     },
     "ddclient_server": {
-      "type": "string",
-      "description": "Host name for the api server, like 'ddclient.domain.org'",
+      "description": "Host name for the api server, like 'ddclient.domain.org' or an empty string for the protocol default",
       "oneOf": [
         {
           "type": "string",
@@ -66,11 +77,45 @@
     },
     "ddclient_password": {
       "type": "string",
-      "description": "Password for the api server"
+      "description": "Always an empty string: the password is not sent back"
     },
     "ddclient_protocol": {
       "type": "string",
       "description": "Protocol for the api server"
+    },
+    "ddclient_apikey": {
+      "type": "string",
+      "description": "Always an empty string: the API key is not sent back"
+    },
+    "ddclient_secretapikey": {
+      "type": "string",
+      "description": "Always an empty string: the secret API key is not sent back"
+    },
+    "ddclient_root_domain": {
+      "description": "Root domain of ddclient_host, for the porkbun protocol, or an empty string",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^$"
+        },
+        {
+          "type": "string",
+          "format": "hostname",
+          "pattern": "\\."
+        }
+      ]
+    },
+    "ddclient_stored_secrets": {
+      "type": "array",
+      "description": "Secrets that have a stored value, so an empty field keeps them",
+      "items": {
+        "type": "string",
+        "enum": [
+          "password",
+          "apikey",
+          "secretapikey"
+        ]
+      }
     }
   }
 }
