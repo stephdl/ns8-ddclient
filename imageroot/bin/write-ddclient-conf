@@ -11,81 +11,55 @@
 # protocol declares in ddclient 4.0.0.
 #
 
-import json
 import os
 import re
 import sys
 
-DESCRIPTOR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "etc", "protocols.json")
+import ddclient_protocols as dp
+
 SAFE_VALUE = re.compile(r"[A-Za-z0-9._:/@+-]+")
-
-
-def env_name(var):
-    return "DDCLIENT_" + var.upper().replace("-", "_")
-
-
-def read_secrets(path):
-    # A missing or partial file is normal: instances configured before
-    # password.env held the API keys, or never configured at all
-    secrets = {}
-    try:
-        with open(path) as fp:
-            for line in fp:
-                key, sep, value = line.rstrip("\n").partition("=")
-                if sep:
-                    secrets[key] = value
-    except FileNotFoundError:
-        pass
-    return secrets
 
 
 def quote(value):
     if SAFE_VALUE.fullmatch(value):
         return value
-    # ddclient strips everything after '#' before parsing the line, even
-    # inside quotes: no escaping can carry it
-    if "#" in value or "\n" in value:
-        raise ValueError("value contains '#' or a newline")
     return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
 
 
-def host_entry(protocols, secrets):
+def host_entry():
     protocol = os.getenv("DDCLIENT_PROTOCOL", "")
     host = os.getenv("DDCLIENT_HOST", "")
     if not host:
         return []
-    if protocol not in protocols:
-        # ddclient 4 replaces an unknown protocol with dyndns2 and would send
-        # the credentials to members.dyndns.org
-        print(f"protocol '{protocol}' is not supported by ddclient 4.0.0: {host} is not updated", file=sys.stderr)
+    values = dp.entry_values(protocol, host, os.environ, dp.read_secrets()) if protocol in dp.load() else {}
+    error = dp.entry_error(protocol, host, values)
+    if error:
+        # Not a failure of the unit: a non-zero exit here would also fail
+        # update-module. get-configuration reports the same error to the UI
+        reason = {
+            "unsupported_protocol": f"protocol '{protocol}' is not supported by ddclient 4.0.0",
+            "required": f"'{error['field']}' is required by protocol {protocol}",
+            "invalid": f"'{error['field']}' cannot contain '#' or a newline",
+        }[error["error"]]
+        print(f"{reason}: {host} is not updated", file=sys.stderr)
         return []
 
-    pdef = protocols[protocol]
+    pdef = dp.load()[protocol]
     assignments = ["protocol=" + protocol, "server=" + quote(os.getenv("DDCLIENT_SERVER") or pdef["server"])]
     for var in pdef["vars"]:
         name = var["name"]
+        if not values[name]:
+            continue
         if var["secret"]:
-            value = secrets.get(env_name(name), "")
             # The value stays in the container environment (--env-file), so
             # no character in it can break the configuration file
-            assignment = f"{name}_env={env_name(name)}"
+            assignments.append(f"{name}_env={dp.env_name(name)}")
         else:
-            value = os.getenv(env_name(name), "")
-            assignment = f"{name}={quote(value)}" if value else ""
-        if not value:
-            if var["required"]:
-                print(f"'{name}' is required by protocol {protocol}: {host} is not updated", file=sys.stderr)
-                return []
-            continue
-        assignments.append(assignment)
-
+            assignments.append(f"{name}={quote(values[name])}")
     return [a + ", \\" for a in assignments] + [host]
 
 
 def main():
-    with open(DESCRIPTOR) as fp:
-        protocols = json.load(fp)["protocols"]
-
     lines = [
         "daemon=" + os.getenv("DDCLIENT_DAEMON", "300"),
         "pid=/var/run/ddclient/ddclient.pid",
@@ -94,10 +68,7 @@ def main():
     ]
     if os.getenv("DDCLIENT_IPV6"):
         lines.append("usev6=webv6, webv6=api6.ipify.org")
-    try:
-        lines += host_entry(protocols, read_secrets("password.env"))
-    except ValueError as ex:
-        print(f"cannot write the host entry: {ex}", file=sys.stderr)
+    lines += host_entry()
 
     os.makedirs("config", exist_ok=True)
     with open("config/ddclient.conf", "w") as fp:

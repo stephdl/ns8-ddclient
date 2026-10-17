@@ -17,7 +17,8 @@
       "ddclient_root_domain": "",
       "ddclient_stored_secrets": [
         "password"
-      ]
+      ],
+      "ddclient_entry_error": null
     }
   ],
   "type": "object",
@@ -32,7 +33,8 @@
     "ddclient_apikey",
     "ddclient_secretapikey",
     "ddclient_root_domain",
-    "ddclient_stored_secrets"
+    "ddclient_stored_secrets",
+    "ddclient_entry_error"
   ],
   "properties": {
     "ddclient_daemon": {
@@ -116,6 +118,35 @@
           "secretapikey"
         ]
       }
+    },
+    "ddclient_entry_error": {
+      "description": "Why the host entry is not written, or null when it is",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "error",
+            "field"
+          ],
+          "properties": {
+            "error": {
+              "type": "string",
+              "enum": [
+                "unsupported_protocol",
+                "required",
+                "invalid"
+              ]
+            },
+            "field": {
+              "type": "string",
+              "description": "The protocol name, or the missing or invalid variable"
+            }
+          }
+        }
+      ]
     }
   }
 }
