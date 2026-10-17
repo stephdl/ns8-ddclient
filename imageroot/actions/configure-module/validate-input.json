@@ -9,7 +9,17 @@
             "ddclient_server": "ddclient.domain.org",
             "ddclient_login": "admin",
             "ddclient_password": "admin",
-            "ddclient_protocol": "http",
+            "ddclient_protocol": "dyndns2",
+            "ddclient_daemon": "300",
+            "ddclient_ipv6": false
+        },
+        {
+            "ddclient_host": "home.example.com",
+            "ddclient_server": "",
+            "ddclient_apikey": "pk1_0123456789abcdef",
+            "ddclient_secretapikey": "sk1_0123456789abcdef",
+            "ddclient_root_domain": "example.com",
+            "ddclient_protocol": "porkbun",
             "ddclient_daemon": "300",
             "ddclient_ipv6": false
         }
@@ -18,8 +28,6 @@
     "required": [
         "ddclient_host",
         "ddclient_server",
-        "ddclient_login",
-        "ddclient_password",
         "ddclient_protocol",
         "ddclient_daemon",
         "ddclient_ipv6"
@@ -32,18 +40,52 @@
             "pattern": "\\."
         },
         "ddclient_server": {
-            "type": "string",
-            "description": "Host name for the api server, like 'ddclient.domain.org'",
-            "format": "hostname",
-            "pattern": "\\."
+            "description": "Host name of the provider API server, like 'members.dyndns.org'. An empty string selects the protocol default",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "pattern": "^$"
+                },
+                {
+                    "type": "string",
+                    "format": "hostname",
+                    "pattern": "\\."
+                }
+            ]
         },
         "ddclient_login": {
             "type": "string",
-            "description": "Login for the api server"
+            "description": "Login for the api server, for protocols that use it. ddclient cannot read a '#' in it",
+            "pattern": "^[^#\\n\\r]*$"
         },
         "ddclient_password": {
             "type": "string",
-            "description": "Password for the api server"
+            "description": "Password for the api server, for protocols that use it. An empty string keeps the stored one",
+            "pattern": "^[^\\n\\r]*$"
+        },
+        "ddclient_apikey": {
+            "type": "string",
+            "description": "API key, for the porkbun protocol. An empty string keeps the stored one",
+            "pattern": "^[^\\n\\r]*$"
+        },
+        "ddclient_secretapikey": {
+            "type": "string",
+            "description": "Secret API key, for the porkbun protocol. An empty string keeps the stored one",
+            "pattern": "^[^\\n\\r]*$"
+        },
+        "ddclient_root_domain": {
+            "description": "Root domain of ddclient_host, for the porkbun protocol, like 'example.com'. An empty string splits the host name at the first dot",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "pattern": "^$"
+                },
+                {
+                    "type": "string",
+                    "format": "hostname",
+                    "pattern": "\\."
+                }
+            ]
         },
         "ddclient_protocol": {
             "type": "string",

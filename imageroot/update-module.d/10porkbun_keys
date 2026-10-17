@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+#
+# Before ddclient 4 support, the UI offered porkbun with login and password
+# fields only, and ddclient 4 ignores both. Move the keys people typed there
+# to apikey and secretapikey, and drop porkbun.com, which ddclient 4 no
+# longer accepts as server. Values are copied, never deleted.
+#
+
+import os
+import sys
+
+import agent
+import ddclient_protocols as dp
+
+if os.getenv("DDCLIENT_PROTOCOL") != "porkbun":
+    sys.exit(0)
+
+# porkbun.com answers 403 to the API: an empty server selects api.porkbun.com
+if os.getenv("DDCLIENT_SERVER", "").lower().rstrip(".") in ["porkbun.com", "www.porkbun.com"]:
+    agent.set_env("DDCLIENT_SERVER", "")
+    print("porkbun: server cleared, api.porkbun.com is used", file=sys.stderr)
+
+secrets = dp.read_secrets()
+if secrets["DDCLIENT_APIKEY"] or secrets["DDCLIENT_SECRETAPIKEY"]:
+    sys.exit(0)
+
+# Porkbun keys start with pk1_ and sk1_: sort them whatever field they
+# were typed in, and leave anything else for the admin to fill. A moved
+# password is cleared, so the key is not passed to the container twice
+for value in [os.getenv("DDCLIENT_LOGIN", ""), secrets["DDCLIENT_PASSWORD"]]:
+    if value.startswith("pk1_"):
+        secrets["DDCLIENT_APIKEY"] = value
+    elif value.startswith("sk1_"):
+        secrets["DDCLIENT_SECRETAPIKEY"] = value
+if secrets["DDCLIENT_PASSWORD"] in [secrets["DDCLIENT_APIKEY"], secrets["DDCLIENT_SECRETAPIKEY"]]:
+    secrets["DDCLIENT_PASSWORD"] = ""
+if secrets["DDCLIENT_APIKEY"] or secrets["DDCLIENT_SECRETAPIKEY"]:
+    agent.write_envfile(dp.SECRETS_FILE, secrets)
+    print("porkbun: API keys copied from the login and password fields", file=sys.stderr)

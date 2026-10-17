@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 minutes",
     "ddclient_daemon_3600s": "1 hour",
     "enable_ipv6": "Enable IPv6 automatic update",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "Leave empty for unchanged password",
-    "ddclient_password_placeholder_write_password_here": "Write password here",
-    "ddclient_documentation": "The ddclient documentation {documentation}"
+    "ddclient_documentation": "The ddclient documentation {documentation}",
+    "provider_fqdn_helper": "Leave empty to use the default server of the protocol",
+    "ddclient_protocol_placeholder": "Choose a protocol",
+    "ddclient_protocol_required": "Choose a protocol supported by ddclient 4",
+    "ddclient_apikey": "API key",
+    "ddclient_secretapikey": "Secret API key",
+    "ddclient_root_domain": "Root domain",
+    "ddclient_root_domain_helper": "Domain registered at the provider, like example.com. Fill it when the dynamic domain name has several subdomain levels, like a.home.example.com. Empty: the name is split at the first dot",
+    "secret_placeholder_leave_empty_for_unchanged": "Leave empty to keep the stored value",
+    "unsupported_protocol_title": "Protocol no longer supported",
+    "unsupported_protocol_description": "The configured protocol {protocol} is not supported by ddclient 4. The domain name is not updated anymore. Choose another protocol and save.",
+    "entry_not_written_title": "Domain name not updated",
+    "entry_required_description": "The field {field} is empty. Fill it and save.",
+    "entry_invalid_description": "The field {field} contains a '#' or a line break, which ddclient cannot read. Change it and save.",
+    "entry_required": "Required",
+    "entry_invalid": "A '#' or a line break is not accepted",
+    "entry_unsupported_protocol": "Choose a protocol supported by ddclient 4",
+    "entry_root_domain": "The dynamic domain name must end with the root domain",
+    "entry_root_domain_description": "The dynamic domain name does not end with the root domain. Change one of them and save."
   },
   "about": {
     "title": "About"

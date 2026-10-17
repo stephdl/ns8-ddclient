@@ -8,18 +8,23 @@
 import sys
 import json
 import agent
+import ddclient_protocols as dp
 import os
 
 request = json.load(sys.stdin)
 renv = request['environment']
+secrets = dp.read_secrets()
 
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "ddclient_host": renv["DDCLIENT_HOST"],
-    "ddclient_login": renv["DDCLIENT_LOGIN"],
-    "ddclient_password": agent.read_envfile("password.env")["DDCLIENT_PASSWORD"],
+    "ddclient_login": renv.get("DDCLIENT_LOGIN", ""),
+    "ddclient_password": secrets["DDCLIENT_PASSWORD"],
+    "ddclient_apikey": secrets["DDCLIENT_APIKEY"],
+    "ddclient_secretapikey": secrets["DDCLIENT_SECRETAPIKEY"],
     "ddclient_protocol": renv["DDCLIENT_PROTOCOL"],
     "ddclient_server": renv["DDCLIENT_SERVER"],
+    "ddclient_root_domain": renv.get("DDCLIENT_ROOT_DOMAIN", ""),
     "ddclient_daemon": renv["DDCLIENT_DAEMON"],
-    "ddclient_ipv6": renv["DDCLIENT_IPV6"],
+    "ddclient_ipv6": renv["DDCLIENT_IPV6"] == "webv6",
 })
 agent.assert_exp(configure_retval['exit_code'] == 0, "The configure-module subtask failed!")

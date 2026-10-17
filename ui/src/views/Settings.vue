@@ -42,6 +42,30 @@
         />
       </cv-column>
     </cv-row>
+    <cv-row v-if="entryErrorMessage">
+      <cv-column>
+        <NsInlineNotification
+          kind="warning"
+          :title="$t('settings.entry_not_written_title')"
+          :description="entryErrorMessage"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
+    <cv-row v-if="isProtocolUnsupported">
+      <cv-column>
+        <NsInlineNotification
+          kind="warning"
+          :title="$t('settings.unsupported_protocol_title')"
+          :description="
+            $t('settings.unsupported_protocol_description', {
+              protocol: configuredProtocol,
+            })
+          "
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
     <cv-row>
       <cv-column>
         <cv-tile light>
@@ -69,28 +93,21 @@
               :hide-selected="false"
               :invalid-message="$t(error.ddclient_protocol)"
               :label="$t('settings.ddclient_protocol')"
+              :placeholder="$t('settings.ddclient_protocol_placeholder')"
+              ref="ddclient_protocol"
               :disabled="loading.getConfiguration || loading.configureModule"
             >
-              <cv-dropdown-item value="changeip">changeip</cv-dropdown-item>
-              <cv-dropdown-item value="dnspark">dnspark</cv-dropdown-item>
-              <cv-dropdown-item value="dslreports1"
-                >dslreports1</cv-dropdown-item
+              <cv-dropdown-item
+                v-for="protocol in protocolNames"
+                :key="protocol"
+                :value="protocol"
+                >{{ protocol }}</cv-dropdown-item
               >
-              <cv-dropdown-item value="duckdns">duckdns</cv-dropdown-item>
-              <cv-dropdown-item value="dyndns1">dyndns1</cv-dropdown-item>
-              <cv-dropdown-item value="dyndns2">dyndns2</cv-dropdown-item>
-              <cv-dropdown-item value="easydns">easydns</cv-dropdown-item>
-              <cv-dropdown-item value="namecheap">namecheap</cv-dropdown-item>
-              <cv-dropdown-item value="zoneedit1">zoneedit1</cv-dropdown-item>
-              <cv-dropdown-item value="googledomains"
-                >googledomains</cv-dropdown-item
-              >
-              <cv-dropdown-item value="nsupdate">nsupdate</cv-dropdown-item>
-              <cv-dropdown-item value="porkbun">porkbun</cv-dropdown-item>
             </cv-dropdown>
             <NsTextInput
               :label="$t('settings.provider_fqdn')"
-              placeholder="providers.example.org"
+              :placeholder="defaultServer || 'providers.example.org'"
+              :helper-text="$t('settings.provider_fqdn_helper')"
               v-model.trim="ddclient_server"
               class="mg-bottom"
               :invalid-message="$t(error.ddclient_server)"
@@ -99,6 +116,7 @@
             >
             </NsTextInput>
             <NsTextInput
+              v-if="usesVar('login')"
               :label="$t('settings.ddclient_login')"
               placeholder="username"
               v-model.trim="ddclient_login"
@@ -109,22 +127,51 @@
             >
             </NsTextInput>
             <NsTextInput
+              v-if="usesVar('password')"
               :label="$t('settings.ddclient_password')"
-              :placeholder="
-                ddclient_configured
-                  ? $t(
-                      'settings.ddclient_password_placeholder_leave_empty_for_unchanged'
-                    )
-                  : $t(
-                      'settings.ddclient_password_placeholder_write_password_here'
-                    )
-              "
+              :placeholder="secretPlaceholder('password')"
               type="password"
               v-model.trim="ddclient_password"
               class="mg-bottom"
-              :invalid-message="$t(error.ddclient_login)"
+              :invalid-message="$t(error.ddclient_password)"
               :disabled="loading.getConfiguration || loading.configureModule"
               ref="ddclient_password"
+            >
+            </NsTextInput>
+            <NsTextInput
+              v-if="usesVar('apikey')"
+              :label="$t('settings.ddclient_apikey')"
+              :placeholder="secretPlaceholder('apikey')"
+              type="password"
+              v-model.trim="ddclient_apikey"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_apikey)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_apikey"
+            >
+            </NsTextInput>
+            <NsTextInput
+              v-if="usesVar('secretapikey')"
+              :label="$t('settings.ddclient_secretapikey')"
+              :placeholder="secretPlaceholder('secretapikey')"
+              type="password"
+              v-model.trim="ddclient_secretapikey"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_secretapikey)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_secretapikey"
+            >
+            </NsTextInput>
+            <NsTextInput
+              v-if="usesVar('root-domain')"
+              :label="$t('settings.ddclient_root_domain')"
+              placeholder="example.com"
+              :helper-text="$t('settings.ddclient_root_domain_helper')"
+              v-model.trim="ddclient_root_domain"
+              class="mg-bottom"
+              :invalid-message="$t(error.ddclient_root_domain)"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              ref="ddclient_root_domain"
             >
             </NsTextInput>
             <!-- advanced options -->
@@ -213,6 +260,7 @@
 
 <script>
 import to from "await-to-js";
+import descriptor from "../../../imageroot/etc/protocols.json";
 import { mapState } from "vuex";
 import {
   QueryParamService,
@@ -245,12 +293,18 @@ export default {
       ddclient_protocol: "",
       ddclient_login: "",
       ddclient_password: "",
+      ddclient_apikey: "",
+      ddclient_secretapikey: "",
+      ddclient_root_domain: "",
+      ddclient_stored_secrets: [],
+      ddclient_entry_error: null,
+      configuredProtocol: "",
+      protocols: descriptor.protocols,
       ipv4_address: "",
       ipv6_address: "",
       ddclient_daemon: "300",
       isIpv6Enabled: false,
       ddclient_ipv6: false,
-      ddclient_configured: false,
       toggleAccordion: [false],
       loading: {
         getConfiguration: false,
@@ -264,12 +318,47 @@ export default {
         ddclient_protocol: "",
         ddclient_login: "",
         ddclient_password: "",
+        ddclient_apikey: "",
+        ddclient_secretapikey: "",
+        ddclient_root_domain: "",
         ddclient_daemon: "",
       },
     };
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    protocolNames() {
+      return Object.keys(this.protocols).sort();
+    },
+    protocolVars() {
+      const protocol = this.protocols[this.ddclient_protocol];
+      return protocol ? protocol.vars : [];
+    },
+    defaultServer() {
+      const protocol = this.protocols[this.ddclient_protocol];
+      return protocol ? protocol.server : "";
+    },
+    // Secrets are stored for one protocol: after a switch they are cleared
+    storedSecrets() {
+      return this.ddclient_protocol === this.configuredProtocol
+        ? this.ddclient_stored_secrets
+        : [];
+    },
+    entryErrorMessage() {
+      const e = this.ddclient_entry_error;
+      if (!e || e.error === "unsupported_protocol") {
+        return "";
+      }
+      return this.$t("settings.entry_" + e.error + "_description", {
+        field: e.field,
+      });
+    },
+    isProtocolUnsupported() {
+      return (
+        this.configuredProtocol !== "" &&
+        !this.protocols[this.configuredProtocol]
+      );
+    },
     descriptionMessage() {
       return this.ipv4_address && this.ipv6_address
         ? this.$t("settings.external_ip_of_the_server_both", {
@@ -299,6 +388,23 @@ export default {
     next();
   },
   methods: {
+    fieldName(varName) {
+      return "ddclient_" + varName.replace(/-/g, "_");
+    },
+    usesVar(varName) {
+      return this.protocolVars.some((v) => v.name === varName);
+    },
+    focusProtocol() {
+      // cv-dropdown has no focus() method for focusElement to call
+      this.$nextTick(() => {
+        this.$refs.ddclient_protocol.$el.querySelector("button").focus();
+      });
+    },
+    secretPlaceholder(varName) {
+      return this.storedSecrets.includes(varName)
+        ? this.$t("settings.secret_placeholder_leave_empty_for_unchanged")
+        : "";
+    },
     async getConfiguration() {
       this.loading.getConfiguration = true;
       this.error.getConfiguration = "";
@@ -348,11 +454,16 @@ export default {
       this.ddclient_protocol = config.ddclient_protocol;
       this.ddclient_login = config.ddclient_login;
       this.ddclient_password = config.ddclient_password;
+      this.ddclient_apikey = config.ddclient_apikey;
+      this.ddclient_secretapikey = config.ddclient_secretapikey;
+      this.ddclient_root_domain = config.ddclient_root_domain;
+      this.ddclient_stored_secrets = config.ddclient_stored_secrets;
+      this.ddclient_entry_error = config.ddclient_entry_error;
+      this.configuredProtocol = config.ddclient_protocol;
       this.ipv4_address = config.ipv4_address;
       this.ipv6_address = config.ipv6_address;
       this.ddclient_daemon = config.ddclient_daemon;
       this.isIpv6Enabled = config.ddclient_ipv6;
-      this.ddclient_configured = config.ddclient_configured;
 
       this.loading.getConfiguration = false;
       this.focusElement("ddclient_host");
@@ -369,37 +480,26 @@ export default {
         }
         isValidationOk = false;
       }
-      if (!this.ddclient_server) {
-        this.error.ddclient_server = "common.required";
+      // cv-dropdown keeps a value it has no item for, and would send it back
+      if (!this.protocols[this.ddclient_protocol]) {
+        this.error.ddclient_protocol = "settings.ddclient_protocol_required";
 
         if (isValidationOk) {
-          this.focusElement("ddclient_server");
+          this.focusProtocol();
         }
         isValidationOk = false;
       }
-      if (!this.ddclient_protocol) {
-        this.error.ddclient_protocol = "common.required";
+      for (const v of this.protocolVars) {
+        const field = this.fieldName(v.name);
+        const isStored = v.secret && this.storedSecrets.includes(v.name);
+        if (v.required && !this[field] && !isStored) {
+          this.error[field] = "common.required";
 
-        if (isValidationOk) {
-          this.focusElement("ddclient_protocol");
+          if (isValidationOk) {
+            this.focusElement(field);
+          }
+          isValidationOk = false;
         }
-        isValidationOk = false;
-      }
-      if (!this.ddclient_login) {
-        this.error.ddclient_login = "common.required";
-
-        if (isValidationOk) {
-          this.focusElement("ddclient_login");
-        }
-        isValidationOk = false;
-      }
-      if (!this.ddclient_password && !this.ddclient_configured) {
-        this.error.ddclient_password = "common.required";
-
-        if (isValidationOk) {
-          this.focusElement("ddclient_password");
-        }
-        isValidationOk = false;
       }
       return isValidationOk;
     },
@@ -410,10 +510,14 @@ export default {
       for (const validationError of validationErrors) {
         const param = validationError.parameter;
         // set i18n error message
-        this.error[param] = this.$t("settings." + validationError.error);
+        this.error[param] = "settings." + validationError.error;
 
         if (!focusAlreadySet) {
-          this.focusElement(param);
+          if (param === "ddclient_protocol") {
+            this.focusProtocol();
+          } else {
+            this.focusElement(param);
+          }
           focusAlreadySet = true;
         }
       }
@@ -456,6 +560,9 @@ export default {
             ddclient_protocol: this.ddclient_protocol,
             ddclient_login: this.ddclient_login,
             ddclient_password: this.ddclient_password,
+            ddclient_apikey: this.ddclient_apikey,
+            ddclient_secretapikey: this.ddclient_secretapikey,
+            ddclient_root_domain: this.ddclient_root_domain,
             ddclient_daemon: this.ddclient_daemon,
             ddclient_ipv6: this.isIpv6Enabled,
           },

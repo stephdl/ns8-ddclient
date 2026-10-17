@@ -1,0 +1,68 @@
+{
+  "ddclient_version": "4.0.0",
+  "protocols": {
+    "changeip": {
+      "server": "nic.changeip.com",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "dslreports1": {
+      "server": "www.dslreports.com",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "duckdns": {
+      "server": "www.duckdns.org",
+      "vars": [
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "dyndns1": {
+      "server": "members.dyndns.org",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "dyndns2": {
+      "server": "members.dyndns.org",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "easydns": {
+      "server": "api.cp.easydns.com",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "namecheap": {
+      "server": "dynamicdns.park-your-domain.com",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    },
+    "porkbun": {
+      "server": "api.porkbun.com",
+      "vars": [
+        { "name": "apikey", "required": true, "secret": true },
+        { "name": "secretapikey", "required": true, "secret": true },
+        { "name": "root-domain", "required": false, "secret": false }
+      ]
+    },
+    "zoneedit1": {
+      "server": "dynamic.zoneedit.com",
+      "vars": [
+        { "name": "login", "required": true, "secret": false },
+        { "name": "password", "required": true, "secret": true }
+      ]
+    }
+  }
+}

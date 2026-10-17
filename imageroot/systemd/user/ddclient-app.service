@@ -16,6 +16,8 @@ WorkingDirectory=%S/state
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p config
+# podman --env-file fails on a missing file, before the first configure-module
+ExecStartPre=/bin/sh -c 'umask 077; touch password.env'
 ExecStartPre=/bin/rm -f %t/ddclient-app.pid %t/ddclient-app.ctr-id
 ExecStartPre=-runagent discover-smarthost
 ExecStartPre=runagent write-ddclient-conf
@@ -23,6 +25,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/ddclient-app.pid \
     --cidfile %t/ddclient-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/ddclient.pod-id --replace -d --name  ddclient-app \
     --volume config:/config:Z \
+    --log-opt=tag=%u \
     --env-file=%S/state/password.env \
     -e PUID=1000 \
     -e PGID=1000 \

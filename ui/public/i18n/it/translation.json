@@ -59,9 +59,25 @@
     "ddclient_daemon_1800s": "30 minuti",
     "ddclient_daemon_3600s": "1 ora",
     "enable_ipv6": "Abilita aggiornamento automatico IPv6",
-    "ddclient_password_placeholder_leave_empty_for_unchanged": "Lascia vuoto se la password non cambia",
-    "ddclient_password_placeholder_write_password_here": "Scrivi la password qui",
-    "ddclient_documentation": "La documentazione di ddclient {documentation}"
+    "ddclient_documentation": "La documentazione di ddclient {documentation}",
+    "provider_fqdn_helper": "Lasciare vuoto per usare il server predefinito del protocollo",
+    "ddclient_protocol_placeholder": "Scegli un protocollo",
+    "ddclient_protocol_required": "Scegli un protocollo supportato da ddclient 4",
+    "ddclient_apikey": "Chiave API",
+    "ddclient_secretapikey": "Chiave API segreta",
+    "ddclient_root_domain": "Dominio radice",
+    "ddclient_root_domain_helper": "Dominio registrato presso il provider, ad esempio example.com. Da compilare quando il nome di dominio dinamico ha più livelli di sottodominio, ad esempio a.home.example.com. Vuoto: il nome viene diviso al primo punto",
+    "secret_placeholder_leave_empty_for_unchanged": "Lasciare vuoto per mantenere il valore salvato",
+    "unsupported_protocol_title": "Protocollo non più supportato",
+    "unsupported_protocol_description": "Il protocollo configurato {protocol} non è supportato da ddclient 4. Il nome di dominio non viene più aggiornato. Scegli un altro protocollo e salva.",
+    "entry_not_written_title": "Nome di dominio non aggiornato",
+    "entry_required_description": "Il campo {field} è vuoto. Compilalo e salva.",
+    "entry_invalid_description": "Il campo {field} contiene un '#' o un a capo, che ddclient non può leggere. Modificalo e salva.",
+    "entry_required": "Obbligatorio",
+    "entry_invalid": "Un '#' o un a capo non è accettato",
+    "entry_unsupported_protocol": "Scegli un protocollo supportato da ddclient 4",
+    "entry_root_domain": "Il nome di dominio dinamico deve terminare con il dominio radice",
+    "entry_root_domain_description": "Il nome di dominio dinamico non termina con il dominio radice. Modifica uno dei due e salva."
   },
   "about": {
     "title": "Informazioni"

@@ -15,6 +15,8 @@ import json
 import agent
 import subprocess
 
+import ddclient_protocols as dp
+
 # Prepare return variable
 config = {}
 
@@ -23,15 +25,26 @@ config["ddclient_host"] = os.getenv("DDCLIENT_HOST","")
 config["ddclient_login"] = os.getenv("DDCLIENT_LOGIN","")
 config["ddclient_protocol"] = os.getenv("DDCLIENT_PROTOCOL","")
 config["ddclient_server"] = os.getenv("DDCLIENT_SERVER","")
+config["ddclient_root_domain"] = os.getenv("DDCLIENT_ROOT_DOMAIN","")
 config["ddclient_daemon"] = os.getenv("DDCLIENT_DAEMON","300")
 config["ddclient_ipv6"] = True if os.getenv("DDCLIENT_IPV6","") == "webv6" else False
 
-if os.path.exists("password.env"):
-    config["ddclient_configured"] = True
-else:
-    config["ddclient_configured"] = False
-
 config["ddclient_password"] = ""
+config["ddclient_apikey"] = ""
+config["ddclient_secretapikey"] = ""
+
+# Secrets are never sent back: the UI only needs to know which ones are set
+secrets = dp.read_secrets()
+config["ddclient_stored_secrets"] = [name for name in dp.SECRET_NAMES if secrets.get(dp.env_name(name))]
+
+# Same check as bin/write-ddclient-conf, so the UI can say why the host is
+# not updated, for example after an update from a version that accepted it
+protocol = config["ddclient_protocol"]
+host = config["ddclient_host"]
+config["ddclient_entry_error"] = None
+if host:
+    values = dp.entry_values(protocol, host, os.environ, secrets)
+    config["ddclient_entry_error"] = dp.entry_error(protocol, host, values)
 
 
 def get_ip(version='-4'):

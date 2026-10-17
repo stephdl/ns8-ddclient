@@ -10,6 +10,15 @@ ${TEST_LOGIN}       ns8-ci
 ${TEST_PASSWORD}    Nethesis,1234
 ${TEST_PROTOCOL}    dyndns2
 ${TEST_DAEMON}      300
+${PB_HOST}          home.ns8-ci.test
+${PB_ROOT}          ns8-ci.test
+${PB_APIKEY}        pk1_ns8ci
+${PB_SECRET}        sk1_ns8#ci
+# .invalid never resolves: ddclient builds its request, then fails on DNS
+# before anything reaches a provider
+${NO_SERVER}        ddns.example.invalid
+${TRICKY_PASSWORD}    pa#ss word
+${TRICKY_APIKEY}    pk1_ns8 #ci
 
 *** Keywords ***
 Login to cluster-admin
@@ -27,6 +36,27 @@ Rendered configuration should carry
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    ${text}
+
+Container configuration should carry
+    [Arguments]    ${text}
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} podman exec ddclient-app cat /config/ddclient.conf
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    ${text}
+
+Run ddclient once
+    [Documentation]    Run one update pass with the configuration the module
+    ...                copied into the container, and return its debug log.
+    ...                The address is fixed so the pass needs no IP discovery.
+    [Arguments]    ${host}
+    Wait Until Keyword Succeeds    60s    2s    Container configuration should carry    ${host}
+    ${output} =    Execute Command
+    ...    runagent -m ${module_id} podman exec ddclient-app sh -c 'sed -e "/^daemon=/d" -e "/^usev6=/d" -e "s/^usev4=.*/usev4=ipv4, ipv4=192.0.2.10/" /config/ddclient.conf > /tmp/t.conf && chmod 600 /tmp/t.conf && timeout 60 ddclient -foreground -force -debug -verbose -noquiet -file /tmp/t.conf -cache /tmp/t.cache 2>&1; rm -f /tmp/t.conf /tmp/t.cache'
+    Should Not Contain    ${output}    unrecognized keyword
+    Should Not Contain    ${output}    invalid value
+    Should Not Contain    ${output}    not set for keyword
+    RETURN    ${output}
 
 *** Test Cases ***
 Check if ddclient is installed correctly
@@ -78,11 +108,107 @@ Check if the password stays out of the environment
     Should Not Contain    ${output}    ${TEST_PASSWORD}
     Should Contain    ${output}    DDCLIENT_LOGIN=${TEST_LOGIN}
 
+Check if every secret key is written
+    # configure-module writes all keys, even empty, so the file has the same
+    # shape whatever the protocol
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cut -d= -f1 $AGENT_STATE_DIR/password.env'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal    ${output}    DDCLIENT_APIKEY\nDDCLIENT_PASSWORD\nDDCLIENT_SECRETAPIKEY
+
+Check if a porkbun entry is rendered
+    # Run the renderer alone in a scratch directory: a configure-module call
+    # would restart ddclient, which would then call the porkbun API
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cd $(mktemp -d) && printf "DDCLIENT_APIKEY=${PB_APIKEY}\\nDDCLIENT_SECRETAPIKEY=${PB_SECRET}\\n" > password.env && DDCLIENT_PROTOCOL=porkbun DDCLIENT_SERVER= DDCLIENT_HOST=${PB_HOST} DDCLIENT_ROOT_DOMAIN=${PB_ROOT} DDCLIENT_LOGIN=${TEST_LOGIN} write-ddclient-conf && cat config/ddclient.conf && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    protocol=porkbun, \\\n
+    # An empty server falls back to the protocol default
+    Should Contain    ${output}    server=api.porkbun.com, \\\n
+    Should Contain    ${output}    apikey_env=DDCLIENT_APIKEY, \\\n
+    Should Contain    ${output}    secretapikey_env=DDCLIENT_SECRETAPIKEY, \\\n
+    Should Contain    ${output}    root-domain=${PB_ROOT}, \\\n
+    Should End With    ${output}    \n${PB_HOST}
+    # porkbun declares no login or password, and the keys stay in the
+    # container environment
+    Should Not Contain    ${output}    login=
+    Should Not Contain    ${output}    password
+    Should Not Contain    ${output}    ${PB_APIKEY}
+    Should Not Contain    ${output}    ${PB_SECRET}
+
+Check if a protocol removed from ddclient 4 gets no entry
+    # ddclient 4 would replace it with dyndns2 and send the credentials to
+    # members.dyndns.org
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cd $(mktemp -d) && DDCLIENT_PROTOCOL=googledomains DDCLIENT_HOST=${PB_HOST} write-ddclient-conf && cat config/ddclient.conf && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Not Contain    ${output}    ${PB_HOST}
+    Should Not Contain    ${output}    protocol=
+
 Check if the services are running
     ${output}  ${rc} =    Execute Command
     ...    runagent -m ${module_id} systemctl --user is-active ddclient.service ddclient-app.service
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
+
+Check if a porkbun setup from 1.1.x is repaired on update
+    # The 1.1.x UI had only login and password: the community report put the
+    # public key in login, the secret key in password, and porkbun.com as
+    # server. Replay the update hook on that state in a scratch directory
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'export AGENT_STATE_DIR=$(mktemp -d) && cd $AGENT_STATE_DIR && printf "DDCLIENT_PASSWORD=${PB_SECRET}\\n" > password.env && printf "DDCLIENT_PROTOCOL=porkbun\\nDDCLIENT_SERVER=porkbun.com\\nDDCLIENT_HOST=${PB_HOST}\\nDDCLIENT_LOGIN=${PB_APIKEY}\\n" > environment && set -a && . ./environment && set +a && $AGENT_INSTALL_DIR/update-module.d/10porkbun_keys && set -a && . ./environment && set +a && write-ddclient-conf && cat config/ddclient.conf password.env && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    server=api.porkbun.com, \\\n
+    Should Contain    ${output}    apikey_env=DDCLIENT_APIKEY, \\\n
+    Should Contain    ${output}    secretapikey_env=DDCLIENT_SECRETAPIKEY, \\\n
+    # The secret key moved out of the password field, which is cleared
+    Should Contain    ${output}    DDCLIENT_APIKEY=${PB_APIKEY}\nDDCLIENT_PASSWORD=\nDDCLIENT_SECRETAPIKEY=
+    Should End With    ${output}    DDCLIENT_SECRETAPIKEY=${PB_SECRET}
+
+Check if porkbun on a bare domain sets the root domain
+    # Without root-domain, ddclient would split example.com into the record
+    # "example" of the zone "com"
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} bash -c 'cd $(mktemp -d) && printf "DDCLIENT_APIKEY=${PB_APIKEY}\\nDDCLIENT_SECRETAPIKEY=${PB_SECRET}\\n" > password.env && DDCLIENT_PROTOCOL=porkbun DDCLIENT_SERVER= DDCLIENT_HOST=${PB_ROOT} write-ddclient-conf && cat config/ddclient.conf && rm -rf "$PWD"'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    root-domain=${PB_ROOT}, \\\n
+
+Check if porkbun without its keys is refused
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TEST_PASSWORD}","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True
+    # Refused by the action step, not the schema: exit 3, not 10
+    Should Be Equal As Integers    ${rc}  3
+    Should Contain    ${output}    entry_required
+
+Check if a protocol switch does not reuse the stored password
+    # The dyndns2 password is stored: duckdns must get its own token
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"ns8ci.duckdns.org","ddclient_server":"","ddclient_protocol":"duckdns","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True
+    # Refused by the action step, not the schema: exit 3, not 10
+    Should Be Equal As Integers    ${rc}  3
+    Should Contain    ${output}    entry_required
+
+Check if a root domain outside the host is refused
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"","ddclient_apikey":"${PB_APIKEY}","ddclient_secretapikey":"${PB_SECRET}","ddclient_root_domain":"example.org","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  3
+    Should Contain    ${output}    entry_root_domain
+
+Check if clearing a required field is refused
+    # Same protocol as stored: the check must not depend on a switch
+    ${output}  ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${TEST_HOST}","ddclient_server":"${TEST_SERVER}","ddclient_login":"","ddclient_protocol":"${TEST_PROTOCOL}","ddclient_daemon":"${TEST_DAEMON}","ddclient_ipv6":false}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  3
+    Should Contain    ${output}    entry_required
 
 Check if an incomplete configuration is refused
     # The agent exits 10 on a JSON Schema input validation failure, and this
@@ -128,6 +254,29 @@ Take screenshots of the module pages
     Sleep    5s
     Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/3._About.png
     Close Browser
+
+Check if ddclient reads a dyndns2 entry
+    # The password goes through password.env, podman --env-file and
+    # password_env=: '#' and the space must reach the request untouched
+    ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"dyn.${TEST_HOST}","ddclient_server":"${NO_SERVER}","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TRICKY_PASSWORD}","ddclient_protocol":"dyndns2","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output} =    Run ddclient once    dyn.${TEST_HOST}
+    Should Contain    ${output}    user="${TEST_LOGIN}:${TRICKY_PASSWORD}"
+    Should Contain    ${output}    url="https://${NO_SERVER}/nic/update?hostname=dyn.${TEST_HOST}&myip=192.0.2.10"
+
+Check if ddclient reads a porkbun entry
+    ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"${NO_SERVER}","ddclient_apikey":"${TRICKY_APIKEY}","ddclient_secretapikey":"${PB_SECRET}","ddclient_root_domain":"${PB_ROOT}","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output} =    Run ddclient once    ${PB_HOST}
+    Should Contain    ${output}    root domain ${PB_ROOT}
+    Should Contain    ${output}    url="https://${NO_SERVER}/api/json/v3/dns/retrieveByNameType/${PB_ROOT}/A/home"
+    # ddclient sends a JSON body whose key order varies between runs
+    Should Contain    ${output}    \\"apikey\\":\\"${TRICKY_APIKEY}\\"
+    Should Contain    ${output}    \\"secretapikey\\":\\"${PB_SECRET}\\"
 
 Check if ddclient is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}

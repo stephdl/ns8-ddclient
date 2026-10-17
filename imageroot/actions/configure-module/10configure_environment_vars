@@ -10,16 +10,53 @@ import sys
 import agent
 import os
 
+import ddclient_protocols as dp
+
 # Try to parse the stdin as JSON.
 # If parsing fails, output everything to stderr
 data = json.load(sys.stdin)
 
+protocol = data["ddclient_protocol"]
+protocol_changed = protocol != os.getenv("DDCLIENT_PROTOCOL", "")
+
+# A stored secret belongs to the protocol it was given for: after a switch,
+# a dyndns2 password must not become a duckdns token. An empty or missing
+# secret in the request keeps the stored one only for the same protocol.
+secrets = dict.fromkeys(dp.SECRET_KEYS, "") if protocol_changed else dp.read_secrets()
+for key in dp.SECRET_KEYS:
+    value = data.get(key.lower(), "")
+    if value != "":
+        secrets[key] = value
+
+# Refuse only an error this request brings in. Restore and clone send the
+# stored setup again, which may already be incomplete or use a protocol
+# ddclient 4 dropped: get-configuration reports it instead
+environ = {
+    "DDCLIENT_LOGIN": data.get("ddclient_login", ""),
+    "DDCLIENT_ROOT_DOMAIN": data.get("ddclient_root_domain", ""),
+}
+host = data["ddclient_host"]
+error = dp.entry_error(protocol, host, dp.entry_values(protocol, host, environ, secrets))
+if error:
+    stored_protocol = os.getenv("DDCLIENT_PROTOCOL", "")
+    stored_host = os.getenv("DDCLIENT_HOST", "")
+    stored_values = dp.entry_values(stored_protocol, stored_host, os.environ, dp.read_secrets())
+    if error == dp.entry_error(stored_protocol, stored_host, stored_values):
+        error = None
+    if error:
+        field = "ddclient_protocol" if error["error"] == "unsupported_protocol" else "ddclient_" + error["field"].replace("-", "_")
+        agent.set_status('validation-failed')
+        json.dump([{'field': field, 'parameter': field, 'value': '', 'error': 'entry_' + error["error"]}], fp=sys.stdout)
+        sys.exit(3)
+
 agent.set_env("DDCLIENT_HOST", data["ddclient_host"])
-agent.set_env("DDCLIENT_LOGIN", data["ddclient_login"])
-agent.set_env("DDCLIENT_PROTOCOL", data["ddclient_protocol"])
+agent.set_env("DDCLIENT_LOGIN", data.get("ddclient_login", ""))
+agent.set_env("DDCLIENT_PROTOCOL", protocol)
 agent.set_env("DDCLIENT_SERVER", data["ddclient_server"])
+agent.set_env("DDCLIENT_ROOT_DOMAIN", data.get("ddclient_root_domain", ""))
 agent.set_env("DDCLIENT_DAEMON", data["ddclient_daemon"])
 agent.set_env("DDCLIENT_IPV6", "webv6" if data["ddclient_ipv6"] else "")
 
-if data["ddclient_password"] !="":
-    agent.write_envfile("password.env", {"DDCLIENT_PASSWORD": data["ddclient_password"]})
+# Every key is written, even empty, so the file has one shape whatever the
+# protocol
+agent.write_envfile("password.env", secrets)
