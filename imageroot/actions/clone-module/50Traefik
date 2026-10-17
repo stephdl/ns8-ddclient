@@ -15,6 +15,6 @@ configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='conf
     "ddclient_protocol": os.environ["DDCLIENT_PROTOCOL"],
     "ddclient_server": os.environ["DDCLIENT_SERVER"],
     "ddclient_daemon": os.environ["DDCLIENT_DAEMON"],
-    "ddclient_ipv6": os.environ["DDCLIENT_IPV6"],
+    "ddclient_ipv6": os.environ["DDCLIENT_IPV6"] == "webv6",
 })
 agent.assert_exp(configure_retval['exit_code'] == 0, "The configure-module subtask failed!")
