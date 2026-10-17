@@ -14,6 +14,11 @@ ${PB_HOST}          home.ns8-ci.test
 ${PB_ROOT}          ns8-ci.test
 ${PB_APIKEY}        pk1_ns8ci
 ${PB_SECRET}        sk1_ns8#ci
+# .invalid never resolves: ddclient builds its request, then fails on DNS
+# before anything reaches a provider
+${NO_SERVER}        ddns.example.invalid
+${TRICKY_PASSWORD}    pa#ss word
+${TRICKY_APIKEY}    pk1_ns8 #ci
 
 *** Keywords ***
 Login to cluster-admin
@@ -31,6 +36,27 @@ Rendered configuration should carry
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    ${text}
+
+Container configuration should carry
+    [Arguments]    ${text}
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} podman exec ddclient-app cat /config/ddclient.conf
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    ${text}
+
+Run ddclient once
+    [Documentation]    Run one update pass with the configuration the module
+    ...                copied into the container, and return its debug log.
+    ...                The address is fixed so the pass needs no IP discovery.
+    [Arguments]    ${host}
+    Wait Until Keyword Succeeds    60s    2s    Container configuration should carry    ${host}
+    ${output} =    Execute Command
+    ...    runagent -m ${module_id} podman exec ddclient-app sh -c 'sed -e "/^daemon=/d" -e "/^usev6=/d" -e "s/^usev4=.*/usev4=ipv4, ipv4=192.0.2.10/" /config/ddclient.conf > /tmp/t.conf && chmod 600 /tmp/t.conf && timeout 60 ddclient -foreground -force -debug -verbose -noquiet -file /tmp/t.conf -cache /tmp/t.cache 2>&1; rm -f /tmp/t.conf /tmp/t.cache'
+    Should Not Contain    ${output}    unrecognized keyword
+    Should Not Contain    ${output}    invalid value
+    Should Not Contain    ${output}    not set for keyword
+    RETURN    ${output}
 
 *** Test Cases ***
 Check if ddclient is installed correctly
@@ -172,6 +198,29 @@ Take screenshots of the module pages
     Sleep    5s
     Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/3._About.png
     Close Browser
+
+Check if ddclient reads a dyndns2 entry
+    # The password goes through password.env, podman --env-file and
+    # password_env=: '#' and the space must reach the request untouched
+    ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"dyn.${TEST_HOST}","ddclient_server":"${NO_SERVER}","ddclient_login":"${TEST_LOGIN}","ddclient_password":"${TRICKY_PASSWORD}","ddclient_protocol":"dyndns2","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output} =    Run ddclient once    dyn.${TEST_HOST}
+    Should Contain    ${output}    user="${TEST_LOGIN}:${TRICKY_PASSWORD}"
+    Should Contain    ${output}    url="https://${NO_SERVER}/nic/update?hostname=dyn.${TEST_HOST}&myip=192.0.2.10"
+
+Check if ddclient reads a porkbun entry
+    ${rc} =    Execute Command
+    ...    api-cli run module/${module_id}/configure-module --data '{"ddclient_host":"${PB_HOST}","ddclient_server":"${NO_SERVER}","ddclient_apikey":"${TRICKY_APIKEY}","ddclient_secretapikey":"${PB_SECRET}","ddclient_root_domain":"${PB_ROOT}","ddclient_protocol":"porkbun","ddclient_daemon":"300","ddclient_ipv6":false}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output} =    Run ddclient once    ${PB_HOST}
+    Should Contain    ${output}    root domain ${PB_ROOT}
+    Should Contain    ${output}    url="https://${NO_SERVER}/api/json/v3/dns/retrieveByNameType/${PB_ROOT}/A/home"
+    # ddclient sends a JSON body whose key order varies between runs
+    Should Contain    ${output}    \\"apikey\\":\\"${TRICKY_APIKEY}\\"
+    Should Contain    ${output}    \\"secretapikey\\":\\"${PB_SECRET}\\"
 
 Check if ddclient is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
