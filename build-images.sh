@@ -43,7 +43,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@node:routeadm" \
     --label="org.nethserver.tcp-ports-demand=0" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/linuxserver/ddclient:v4.0.0-ls236" \
+    --label="org.nethserver.images=docker.io/linuxserver/ddclient:v4.0.0-ls237" \
     --label="org.nethserver.min-core=3.20.1" \
     "${container}"
 # Commit the image
